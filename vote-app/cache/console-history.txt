@@ -1,0 +1,2 @@
+cd vote-app && npx hardhat verify --network sepolia 0xF6edC2121983A17E040d3f8381357104A05761DF
+cd vote-app; npx hardhat run ../check_session.js --network sepolia

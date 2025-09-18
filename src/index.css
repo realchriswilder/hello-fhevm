@@ -1,0 +1,248 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Zama FHEVM Tutorial Design System */
+
+/* Use system default or Montserrat from Google Fonts */
+
+@layer base {
+  :root {
+    /* Core Zama Branding */
+    --zama-yellow: 48 100% 50%; /* #FFD200 */
+    --zama-yellow-bright: 51 100% 56%; /* #FFDB1A */
+    --zama-yellow-dark: 48 100% 40%; /* #FFCC00 */
+    --zama-yellow-subtle: 48 100% 95%; /* Very light yellow for backgrounds */
+
+    /* Semantic Colors Built on Zama Yellow */
+    --background: 0 0% 100%;
+    --foreground: 220 13% 18%; /* Dark blue-gray */
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 18%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 18%;
+
+    /* Primary uses Zama Yellow */
+    --primary: var(--zama-yellow);
+    --primary-foreground: 220 13% 18%; /* Dark text on yellow */
+
+    --secondary: 220 13% 95%; /* Light gray */
+    --secondary-foreground: 220 13% 18%;
+
+    --muted: 220 13% 95%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: var(--zama-yellow-subtle);
+    --accent-foreground: 220 13% 18%;
+
+    /* Success/Error states */
+    --success: 142 76% 36%; /* Green */
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 50%; /* Orange */
+    --warning-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Interactive elements */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: var(--zama-yellow); /* Focus rings in Zama Yellow */
+
+    /* Layout */
+    --radius: 0.75rem; /* Rounded, friendly components */
+
+    /* Tutorial Sidebar */
+    --sidebar-background: 220 13% 98%;
+    --sidebar-foreground: 220 13% 18%;
+    --sidebar-primary: var(--zama-yellow);
+    --sidebar-primary-foreground: 220 13% 18%;
+    --sidebar-accent: var(--zama-yellow-subtle);
+    --sidebar-accent-foreground: 220 13% 18%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: var(--zama-yellow);
+
+    /* Animations and Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Shadows */
+    --shadow-soft: 0 2px 8px hsl(220 13% 18% / 0.08);
+    --shadow-medium: 0 4px 16px hsl(220 13% 18% / 0.12);
+    --shadow-strong: 0 8px 32px hsl(220 13% 18% / 0.16);
+    --shadow-glow: 0 0 20px hsl(var(--zama-yellow) / 0.3);
+  }
+
+  .dark {
+    /* Dark mode maintains Zama Yellow prominence */
+    --background: 220 15% 8%; /* Very dark blue */
+    --foreground: 220 13% 95%;
+
+    --card: 220 15% 10%;
+    --card-foreground: 220 13% 95%;
+
+    --popover: 220 15% 10%;
+    --popover-foreground: 220 13% 95%;
+
+    /* Primary stays Zama Yellow */
+    --primary: var(--zama-yellow);
+    --primary-foreground: 220 15% 8%; /* Dark background on yellow */
+
+    --secondary: 220 13% 15%;
+    --secondary-foreground: 220 13% 95%;
+
+    --muted: 220 13% 15%;
+    --muted-foreground: 220 9% 65%;
+
+    --accent: 220 13% 12%;
+    --accent-foreground: 220 13% 95%;
+
+    /* Status colors adjusted for dark */
+    --success: 142 76% 46%;
+    --success-foreground: 220 15% 8%;
+    
+    --warning: 38 92% 60%;
+    --warning-foreground: 220 15% 8%;
+    
+    --destructive: 0 84% 70%;
+    --destructive-foreground: 220 15% 8%;
+
+    --border: 220 13% 20%;
+    --input: 220 13% 20%;
+    --ring: var(--zama-yellow);
+
+    /* Dark sidebar */
+    --sidebar-background: 220 15% 6%;
+    --sidebar-foreground: 220 13% 95%;
+    --sidebar-primary: var(--zama-yellow);
+    --sidebar-primary-foreground: 220 15% 8%;
+    --sidebar-accent: 220 13% 10%;
+    --sidebar-accent-foreground: 220 13% 95%;
+    --sidebar-border: 220 13% 15%;
+    --sidebar-ring: var(--zama-yellow);
+
+    /* Dark mode shadows */
+    --shadow-soft: 0 2px 8px hsl(220 15% 0% / 0.3);
+    --shadow-medium: 0 4px 16px hsl(220 15% 0% / 0.4);
+    --shadow-strong: 0 8px 32px hsl(220 15% 0% / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  /* Typography Scale */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold tracking-tight;
+  }
+
+  /* Focus styles for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Educational UI Components */
+  .tutorial-step {
+    @apply bg-card rounded-2xl p-6 shadow-[var(--shadow-soft)] border border-border;
+    @apply transition-all duration-300 hover:shadow-[var(--shadow-medium)];
+  }
+
+  .code-block {
+    @apply bg-muted/50 rounded-lg p-4 font-mono text-sm;
+    @apply border border-border overflow-x-auto;
+  }
+
+  .highlight-box {
+    @apply bg-accent/30 border-l-4 border-primary p-4 rounded-r-lg;
+  }
+
+  .interactive-demo {
+    @apply bg-gradient-to-br from-accent/20 to-primary/10;
+    @apply rounded-2xl p-6 border border-primary/20;
+  }
+
+  /* Animations */
+  .animate-fade-in-up {
+    @apply animate-[fadeInUp_0.6s_ease-out_forwards];
+  }
+
+  .animate-bounce-in {
+    @apply animate-[bounceIn_0.5s_ease-out_forwards];
+  }
+
+  .animate-slide-in-right {
+    @apply animate-[slideInRight_0.4s_ease-out_forwards];
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Glow effects */
+  .glow-yellow {
+    box-shadow: 0 0 20px hsl(var(--zama-yellow) / 0.5);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px hsl(var(--zama-yellow) / 0.8);
+  }
+}
