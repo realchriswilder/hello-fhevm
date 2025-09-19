@@ -12,7 +12,7 @@ import "solidity-coverage";
 // Run 'npx hardhat vars setup' to see the list of variables that need to be set
 
 const MNEMONIC: string = vars.get("MNEMONIC", "play cement much paper mandate rubber marble ketchup over wonder critic survey");
-const INFURA_API_KEY: string = vars.get("INFURA_API_KEY", "34c3a5f3ecf943498710543fe38b50f4");
+const INFURA_API_KEY: string = vars.get("INFURA_API_KEY", "");
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -21,7 +21,7 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
-      sepolia: vars.get("ETHERSCAN_API_KEY", "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW"),
+      sepolia: vars.get("ETHERSCAN_API_KEY", ""),
     },
   },
   gasReporter: {
