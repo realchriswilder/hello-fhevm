@@ -78,9 +78,10 @@ export default {
       
       // Typography System
       fontFamily: {
-        display: ['Comicy', 'Inter', 'system-ui', 'sans-serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Montserrat Alternates', 'Comicy', 'Inter', 'system-ui', 'sans-serif'],
+        body: ['Montserrat Alternates', 'Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Monaco', 'Consolas', 'monospace'],
+        'montserrat': ['Montserrat Alternates', 'Inter', 'system-ui', 'sans-serif'],
       },
       
       fontSize: {
