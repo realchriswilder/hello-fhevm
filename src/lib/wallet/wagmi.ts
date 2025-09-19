@@ -6,7 +6,10 @@ import { injected } from 'wagmi/connectors';
 // RainbowKit/Wagmi configuration for Sepolia Testnet
 export const chains = [sepolia] as const;
 
-const projectId = import.meta.env.VITE_WC_PROJECT_ID;
+// Support both env var names; prefer VITE_WALLETCONNECT_PROJECT_ID
+const projectId =
+  (import.meta as any).env?.VITE_WALLETCONNECT_PROJECT_ID ||
+  (import.meta as any).env?.VITE_WC_PROJECT_ID;
 
 export const wagmiConfig = projectId
   ? getDefaultConfig({
