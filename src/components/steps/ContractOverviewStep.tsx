@@ -14,8 +14,12 @@ export const ContractOverviewStep: React.FC = () => {
 
   const handleContinue = () => {
     completeStep('contract-overview');
-    setCurrentStep('private-voting');
-    navigate('/step/private-voting');
+    setCurrentStep('testing-playground');
+    navigate('/step/testing-playground');
+  };
+
+  const openSolidityFile = () => {
+    window.open('https://github.com/realchriswilder/hello-fhevm/blob/main/vote-app/contracts/SimpleVoting.sol', '_blank');
   };
 
   const copyToClipboard = async (text: string, id: string) => {
@@ -40,6 +44,28 @@ export const ContractOverviewStep: React.FC = () => {
       </motion.div>
 
       <div className="space-y-6">
+        {/* Quick Links */}
+        <Card className="tutorial-step">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <FileText className="h-4 w-4" /> Resources & Quick Links
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs space-y-2">
+            <div className="flex gap-2 flex-wrap">
+              <Button size="sm" variant="outline" onClick={openSolidityFile}>Open SimpleVoting.sol</Button>
+              <Button size="sm" variant="outline" asChild>
+                <a href="https://docs.zama.ai/fhevm" target="_blank" rel="noreferrer">Zama FHEVM Docs</a>
+              </Button>
+              <Button size="sm" variant="outline" asChild>
+                <a href="https://docs.zama.ai/protocol/relayer-sdk-guides/fhevm-relayer/decryption" target="_blank" rel="noreferrer">Decryption & Callbacks</a>
+              </Button>
+              <Button size="sm" variant="outline" asChild>
+                <a href="https://docs.zama.ai/fhevm" target="_blank" rel="noreferrer">FHEVM Documentation</a>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
         {/* 1. Imports & Types */}
         <Card className="tutorial-step">
           <CardHeader>
@@ -171,6 +197,55 @@ FHE.allowThis(session.noVotes);`}</code></pre>
           </CardContent>
         </Card>
 
+        {/* Compact Function Table */}
+        <Card className="tutorial-step">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-sm flex items-center justify-center">T</span>
+              Function Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs overflow-x-auto">
+            <div className="min-w-[560px]">
+              <div className="grid grid-cols-5 gap-2 font-semibold">
+                <div>Function</div>
+                <div>Params</div>
+                <div>Encrypted?</div>
+                <div>Key FHE calls</div>
+                <div>Notes</div>
+              </div>
+              <div className="grid grid-cols-5 gap-2 mt-2">
+                <div>createSession</div>
+                <div>durationSeconds</div>
+                <div>—</div>
+                <div>FHE.asEuint8</div>
+                <div>Init encrypted tallies</div>
+              </div>
+              <div className="grid grid-cols-5 gap-2 mt-1">
+                <div>vote</div>
+                <div>sessionId, externalEuint8, proof</div>
+                <div>Yes</div>
+                <div>FHE.fromExternal, FHE.eq, FHE.select, FHE.add, FHE.allowThis</div>
+                <div>No plaintext branching</div>
+              </div>
+              <div className="grid grid-cols-5 gap-2 mt-1">
+                <div>requestTallyReveal</div>
+                <div>sessionId</div>
+                <div>Tallies only</div>
+                <div>FHE.toBytes32, FHE.requestDecryption</div>
+                <div>Aggregates, not individuals</div>
+              </div>
+              <div className="grid grid-cols-5 gap-2 mt-1">
+                <div>resolveTallyCallback</div>
+                <div>requestId, signatures, revealedYes, revealedNo</div>
+                <div>—</div>
+                <div>FHE.checkSignatures</div>
+                <div>Authenticated callback</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* 5. requestTallyReveal */}
         <Card className="tutorial-step">
           <CardHeader>
@@ -249,7 +324,7 @@ s.resolved = true;`}</code></pre>
 
       <div className="text-center">
         <Button onClick={handleContinue} size="lg" className="gap-2">
-          Continue to Voting Demo <ArrowRight className="h-4 w-4" />
+          Continue to Testing Playground <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
     </div>

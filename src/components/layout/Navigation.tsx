@@ -99,7 +99,8 @@ export const Navigation: React.FC<NavigationProps> = ({
     getStepNumber, 
     isStepCompleted, 
     canAccessStep,
-    setCurrentStep 
+    setCurrentStep,
+    triggerConfetti
   } = useTutorialStore();
 
   const totalSteps = steps.length;
@@ -108,6 +109,15 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   const handleStepClick = (stepId: TutorialStep) => {
     if (canAccessStep(stepId)) {
+      // Prevent confetti when navigating back to already-completed steps
+      const isCompleted = isStepCompleted(stepId);
+      if (!isCompleted) {
+        const confettiSteps = ['environment-setup', 'connect-wallet', 'fhe-basics', 'contract-overview', 'testing-playground', 'private-voting'];
+        if (confettiSteps.includes(stepId)) {
+          triggerConfetti();
+        }
+      }
+
       setCurrentStep(stepId);
       onStepSelect?.(stepId);
     }

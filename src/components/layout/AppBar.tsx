@@ -87,9 +87,7 @@ export const AppBar: React.FC<AppBarProps> = ({
             transition={{ duration: 0.5 }}
           >
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-display font-bold text-primary-foreground">
-                Z
-              </div>
+              <img src="/favicon.ico" alt="App icon" className="w-8 h-8 rounded" />
               <div className="hidden sm:block">
                 <h1 className="font-display text-xl font-bold">Hello FHEVM</h1>
                 <p className="text-xs text-muted-foreground hidden md:block">
@@ -171,28 +169,7 @@ export const AppBar: React.FC<AppBarProps> = ({
             )}
           </Button>
 
-          {/* Links menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="p-2">
-                <ExternalLink className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <Github className="h-4 w-4 mr-2" />
-                GitHub Repository
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Zama Documentation
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <ExternalLink className="h-4 w-4 mr-2" />
-                FHEVM Explorer
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Links menu removed per request */}
         </div>
       </div>
 

@@ -503,6 +503,61 @@ contract SimpleVoting is SepoliaConfig {
         "resolveTallyCallback(requestId, cleartexts, decryptionProof): FHE.checkSignatures verifies; abi.decode(cleartexts,(uint8,uint8)) → revealedYes/revealedNo; write into session and mark resolved; emit SessionResolved.",
         "getSession(sessionId): returns creator, endTime, resolved, and clear totals only if resolved (otherwise 0). getSessionCount() returns sessions.length."
       ],
+      code: [
+        {
+          language: "solidity",
+          snippet: `SimpleVoting — monospace walkthrough
+Read top-to-bottom. Sections mirror the UI steps.
+
+STATE
+  creator              : session owner
+  endTime              : voting deadline
+  yesVotes (euint8)    : encrypted YES count
+  noVotes  (euint8)    : encrypted NO count
+  resolved             : have results been revealed?
+  revealedYes (uint8)  : clear YES (after reveal)
+  revealedNo  (uint8)  : clear NO  (after reveal)
+  decryptionRequestId  : track reveal request
+  sessions[]           : all sessions
+  hasVoted[sessionId][addr] : prevent double voting
+  sessionIdByRequestId : map requestId → sessionId
+
+EVENTS (UI hooks)
+  SessionCreated(id, creator, endTime)
+  VoteCast(id, voter)
+  TallyRevealRequested(id, requestId)
+  SessionResolved(id, yes, no)
+
+FLOW
+  1) createSession(durationSeconds)
+     • push a new Session with encrypted zeros
+     • emit SessionCreated
+
+  2) vote(sessionId, externalEuint8 c, bytes proof)
+     • v     = FHE.fromExternal(c, proof)        ← verify + import ciphertext
+     • isYes = FHE.eq(v, 1)                      ← encrypted predicate (0/1)
+     • yesVotes = FHE.add(yesVotes, FHE.select(isYes, 1, 0))
+     • noVotes  = FHE.add(noVotes,  FHE.select(isYes, 0, 1))
+     • FHE.allowThis(yesVotes) and FHE.allowThis(noVotes)  ← authorize reveal
+     • mark hasVoted and emit VoteCast
+
+  3) requestTallyReveal(sessionId)
+     • require creator, time over, not resolved
+     • cts = [FHE.toBytes32(yesVotes), FHE.toBytes32(noVotes)]
+     • requestId = FHE.requestDecryption(cts, resolveTallyCallback)
+     • sessionIdByRequestId[requestId] = sessionId; emit TallyRevealRequested
+
+  4) resolveTallyCallback(requestId, cleartexts, proof)
+     • FHE.checkSignatures(requestId, cleartexts, proof)   ← authenticate
+     • (y, n) = abi.decode(cleartexts, (uint8, uint8))
+     • write y/n, set resolved = true, emit SessionResolved
+
+VIEW HELPER
+  getSession(id) → creator, endTime, resolved, and clear totals
+  (totals are 0 until resolved).`,
+          description: "Commented walkthrough of SimpleVoting showing state, events, and each function with Solidity-style comments"
+        }
+      ],
       links: [
         {
           title: "FHEVM Solidity Overview",

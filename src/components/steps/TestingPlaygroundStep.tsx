@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +19,6 @@ import {
   ArrowRight,
   RefreshCw,
   Trash2,
-  Settings,
   TestTube,
   Code,
   Database,
@@ -57,6 +57,8 @@ export const TestingPlaygroundStep: React.FC = () => {
   const [autoScroll, setAutoScroll] = useState(true);
   const [clickedButtons, setClickedButtons] = useState<Set<string>>(new Set());
   const terminalRef = useRef<HTMLDivElement>(null);
+  const [showChecklist, setShowChecklist] = useState(false);
+  const [runAllCountdown, setRunAllCountdown] = useState<number | null>(null);
 
   // Initialize FHE on component mount
   useEffect(() => {
@@ -300,6 +302,36 @@ export const TestingPlaygroundStep: React.FC = () => {
     }
   ];
 
+  const runFullPipeline = async () => {
+    if (!fheInitialized) {
+      addLog('error', '❌ FHE not initialized. Please wait for initialization to complete.');
+      return;
+    }
+    setClickedButtons(prev => new Set([...prev, 'full-pipeline']));
+    setTimeout(() => {
+      setClickedButtons(prev => { const n = new Set(prev); n.delete('full-pipeline'); return n; });
+    }, 250);
+    try {
+      addLog('info', '🚀 Full pipeline: Encrypt → Compute → Request Decrypt → Callback');
+      const fhe = getFheInstance();
+      const contractAddress = '0x0000000000000000000000000000000000000000';
+      const userAddress = '0x0000000000000000000000000000000000000000';
+      addLog('debug', '🔐 Creating encrypted input...');
+      const ci = await fhe.createEncryptedInput(contractAddress, userAddress);
+      ci.add8(1n);
+      const { handles, inputProof } = await ci.encrypt();
+      addLog('success', '✅ Encrypted handle and proof ready');
+      addLog('debug', `handle: ${String(handles[0]).slice(0, 18)}..., proof: ${String(inputProof).slice(0, 18)}...`);
+      addLog('info', '🧮 Contract would FHE.fromExternal() and add/select counters');
+      addLog('info', '📞 Requesting decryption of aggregates (simulated)...');
+      await new Promise(r => setTimeout(r, 700));
+      addLog('success', '✅ Callback received (simulated): revealedYes=1, revealedNo=0');
+      setShowChecklist(true);
+    } catch (e) {
+      addLog('error', `❌ Full pipeline failed: ${String(e)}`);
+    }
+  };
+
   const runScenario = async (scenario: TestScenario) => {
     if (!fheInitialized) {
       addLog('error', '❌ FHE not initialized. Please wait for initialization to complete.');
@@ -337,11 +369,17 @@ export const TestingPlaygroundStep: React.FC = () => {
     }
   };
 
-  const runAllScenarios = async () => {
+  const runAllScenariosInner = async () => {
     if (!fheInitialized) {
       addLog('error', '❌ FHE not initialized. Please wait for initialization to complete.');
       return;
     }
+
+    // Immediate user feedback (force synchronous paint)
+    flushSync(() => {
+      addLog('info', '🧠 Preparing encryption runtime...');
+      addLog('info', '🔄 Starting pipeline: encryption → computation → logging');
+    });
 
     // Add visual feedback for "Run All" button
     setClickedButtons(prev => new Set([...prev, 'run-all']));
@@ -353,8 +391,10 @@ export const TestingPlaygroundStep: React.FC = () => {
       });
     }, 300);
 
-    addLog('info', '🚀 Starting all test scenarios...');
-    addLog('info', '═'.repeat(60));
+    flushSync(() => {
+      addLog('info', '🚀 Starting all test scenarios...');
+      addLog('info', '═'.repeat(60));
+    });
     
     for (const scenario of testScenarios) {
       await runScenario(scenario);
@@ -362,6 +402,23 @@ export const TestingPlaygroundStep: React.FC = () => {
     }
     
     addLog('success', '🎉 All test scenarios completed!');
+  };
+
+  // Public handler that shows a short countdown before heavy startup
+  const startRunAllScenarios = () => {
+    if (isRunning || !fheInitialized || runAllCountdown !== null) return;
+    let remaining = 5;
+    setRunAllCountdown(remaining);
+    const timer = setInterval(() => {
+      remaining -= 1;
+      setRunAllCountdown(remaining);
+      if (remaining <= 0) {
+        clearInterval(timer);
+        setRunAllCountdown(null);
+        // Kick off the actual run
+        void runAllScenariosInner();
+      }
+    }, 1000);
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -417,29 +474,11 @@ export const TestingPlaygroundStep: React.FC = () => {
                 <Code className="h-5 w-5" />
                 Test Scenarios
               </CardTitle>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setShowSettings(!showSettings);
-                  setClickedButtons(prev => new Set([...prev, 'settings']));
-                  setTimeout(() => {
-                    setClickedButtons(prev => {
-                      const newSet = new Set(prev);
-                      newSet.delete('settings');
-                      return newSet;
-                    });
-                  }, 150);
-                }}
-                className={`transition-all duration-150 ${
-                  clickedButtons.has('settings') ? 'scale-95 bg-primary/20' : 'hover:scale-105'
-                }`}
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
+              {/* Removed settings/gear icon since it had no functionality */}
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
+            {/* Removed Run Full Pipeline button per request */}
             {testScenarios.map((scenario) => (
               <motion.div
                 key={scenario.id}
@@ -489,18 +528,23 @@ export const TestingPlaygroundStep: React.FC = () => {
             
             <div className="pt-2">
               <Button
-                onClick={runAllScenarios}
+                onClick={startRunAllScenarios}
                 disabled={isRunning || !fheInitialized}
                 className={`w-full gap-2 transition-all duration-150 ${
                   clickedButtons.has('run-all') 
                     ? 'scale-95 bg-primary/20 ring-2 ring-primary/50' 
-                    : 'hover:scale-105 hover:bg-primary/10'
+                    : 'hover:scale-105'
                 }`}
               >
                 {isRunning ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Running All...
+                  </>
+                ) : runAllCountdown !== null ? (
+                  <>
+                    <Zap className="h-4 w-4" />
+                    Starting in {runAllCountdown}s
                   </>
                 ) : (
                   <>
@@ -569,29 +613,29 @@ export const TestingPlaygroundStep: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="rounded-md border bg-black/90 text-sm font-mono text-neutral-200">
-              <div className="flex items-center justify-between px-3 py-2 border-b border-white/10">
+            <div className="rounded-md border text-sm font-mono bg-white text-neutral-800 dark:bg-black/90 dark:text-neutral-200">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-black/10 dark:border-white/10">
                 <div className="flex items-center gap-1">
                   <span className="h-2.5 w-2.5 rounded-full bg-red-500" />
                   <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
                   <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
-                  <span className="ml-3 text-[10px] uppercase tracking-wider text-white/70">
+                  <span className="ml-3 text-[10px] uppercase tracking-wider text-black/70 dark:text-white/70">
                     FHE Testing Terminal
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-white/50">
+                <div className="flex items-center gap-2 text-xs text-black/50 dark:text-white/50">
                   <span>{logs.length} logs</span>
                   {isRunning && <Loader2 className="h-3 w-3 animate-spin" />}
                 </div>
               </div>
               <div ref={terminalRef} className="h-[32rem] overflow-auto px-3 py-2 space-y-1">
                 {logs.length === 0 && (
-                  <div className="text-white/50">➜ Ready to run FHE tests...</div>
+                  <div className="text-black/50 dark:text-white/50">➜ Ready to run FHE tests...</div>
                 )}
                 {logs.map((log) => (
                   <div key={log.id} className="flex items-start gap-2">
                     <span className="text-green-500 text-xs mt-0.5">➜</span>
-                    <span className="text-white/50 text-xs">
+                    <span className="text-black/50 dark:text-white/50 text-xs">
                       [{log.timestamp.toLocaleTimeString()}]
                     </span>
                     <span className={`text-xs ${getLogColor(log.type)}`}>
@@ -600,6 +644,26 @@ export const TestingPlaygroundStep: React.FC = () => {
                   </div>
                 ))}
               </div>
+            </div>
+            <div className="mt-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowChecklist(!showChecklist)}
+              >
+                {showChecklist ? 'Hide' : 'Show'} What you should see
+              </Button>
+              <AnimatePresence>
+                {showChecklist && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-2 text-xs text-muted-foreground">
+                    <ul className="list-disc pl-4 space-y-1">
+                      <li>Encrypted handle (0x…) and input proof displayed</li>
+                      <li>Homomorphic add/select mentioned (no plaintext branching)</li>
+                      <li>Simulated requestDecryption and callback with tallies</li>
+                    </ul>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </CardContent>
         </Card>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Vote, ThumbsUp, ThumbsDown, ArrowRight, Loader2 } from 'lucide-react';
 import { useTutorialStore } from '@/state/tutorialStore';
@@ -35,6 +35,7 @@ export const PrivateVotingStep: React.FC = () => {
   const [noPct, setNoPct] = useState<number | null>(null);
   const resolvedRef = useRef<boolean>(false);
   const revealedLoggedRef = useRef<boolean>(false);
+  const [showDecryptModes, setShowDecryptModes] = useState(false);
 
   const SESSIONS_KEY = 'pv_cached_sessions_v1';
 
@@ -474,6 +475,26 @@ const CONTRACT_ABI = SimpleVotingABI.abi;
             <CardTitle>Cast Your Vote</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="text-xs text-muted-foreground">Decryption modes</div>
+              <Button size="sm" variant="outline" onClick={() => setShowDecryptModes(!showDecryptModes)}>
+                {showDecryptModes ? 'Hide' : 'Show'}
+              </Button>
+            </div>
+            <AnimatePresence>
+              {showDecryptModes && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="grid sm:grid-cols-2 gap-2 text-xs">
+                  <div className="rounded border p-2 bg-muted/30">
+                    <div className="font-semibold mb-1">Public reveal (current)</div>
+                    <div>Contract marks tallies and requests decryption of aggregates; oracle callback publishes totals.</div>
+                  </div>
+                  <div className="rounded border p-2 bg-muted/30">
+                    <div className="font-semibold mb-1">User-private decrypt (alt)</div>
+                    <div>SDK re-encrypts result with your key; use userDecrypt() in the frontend to read privately.</div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             {/* Inline stage hints */}
             <div className="grid sm:grid-cols-3 gap-2 text-xs">
               <div className="rounded border p-2 bg-muted/30">
@@ -575,25 +596,28 @@ const CONTRACT_ABI = SimpleVotingABI.abi;
                 Ending a session triggers a <em>reveal request</em>. The network decrypts the two tallies and calls the
                 contract’s callback. Use “Check Results” after a few seconds to see the clear totals.
               </div>
+              <div className="text-[11px] text-muted-foreground">
+                Docs: <a className="underline" href="https://docs.zama.ai/protocol/relayer-sdk-guides/fhevm-relayer/decryption" target="_blank" rel="noreferrer">Decryption & Callbacks</a>
+              </div>
             </div>
 
             {/* Terminal-like logs */}
-            <div className="rounded-md border bg-black/80 text-xs font-mono text-neutral-200">
-              <div className="flex items-center justify-between px-3 py-2 border-b border-white/10">
+            <div className="rounded-md border text-xs font-mono bg-white text-neutral-800 dark:bg-black/80 dark:text-neutral-200">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-black/10 dark:border-white/10">
                 <div className="flex items-center gap-1">
                   <span className="h-2.5 w-2.5 rounded-full bg-red-500" />
                   <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
                   <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
-                  <span className="ml-3 text-[10px] uppercase tracking-wider text-white/70">Session Logs</span>
+                  <span className="ml-3 text-[10px] uppercase tracking-wider text-black/70 dark:text-white/70">Session Logs</span>
                 </div>
                 <Button size="sm" variant="outline" className="h-6 px-2 text-[10px]" onClick={() => setLiveLogs([])}>Clear</Button>
               </div>
               <div ref={terminalRef} className="h-56 overflow-auto px-3 py-2 space-y-1">
                 {liveLogs.length === 0 && (
-                  <div className="text-white/50">➜ Waiting for actions…</div>
+                  <div className="text-black/50 dark:text-white/50">➜ Waiting for actions…</div>
                 )}
                 {liveLogs.map((l, i) => {
-                  const color = l.startsWith('❌') ? 'text-red-400' : l.startsWith('✅') ? 'text-green-400' : l.startsWith('⚠️') ? 'text-yellow-300' : 'text-neutral-200';
+                  const color = l.startsWith('❌') ? 'text-red-400' : l.startsWith('✅') ? 'text-green-400' : l.startsWith('⚠️') ? 'text-yellow-600 dark:text-yellow-300' : 'text-neutral-800 dark:text-neutral-200';
                   return (
                     <div key={i} className={`whitespace-pre-wrap ${color}`}>
                       <span className="text-green-500">➜</span> {l}

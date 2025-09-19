@@ -17,6 +17,13 @@ export interface TutorialState {
   sidebarOpen: boolean;
   activeTab: 'layman' | 'technical';
   progress: Record<TutorialStep, boolean>;
+  confettiTrigger: boolean;
+  celebrationModal: {
+    isOpen: boolean;
+    stepTitle: string;
+    stepNumber: number;
+    nextStepTitle?: string;
+  };
   
   // Actions
   setCurrentStep: (step: TutorialStep) => void;
@@ -27,6 +34,9 @@ export interface TutorialState {
   getStepNumber: (step: TutorialStep) => number;
   isStepCompleted: (step: TutorialStep) => boolean;
   canAccessStep: (step: TutorialStep) => boolean;
+  triggerConfetti: () => void;
+  showCelebration: (stepTitle: string, stepNumber: number, nextStepTitle?: string) => void;
+  hideCelebration: () => void;
 }
 
 const stepOrder: TutorialStep[] = [
@@ -47,6 +57,13 @@ export const useTutorialStore = create<TutorialState>()(
       completedSteps: new Set<TutorialStep>(),
       sidebarOpen: true,
       activeTab: 'layman',
+      confettiTrigger: false,
+      celebrationModal: {
+        isOpen: false,
+        stepTitle: '',
+        stepNumber: 0,
+        nextStepTitle: undefined
+      },
       progress: {
         'welcome': false,
         'environment-setup': false,
@@ -60,10 +77,37 @@ export const useTutorialStore = create<TutorialState>()(
 
       setCurrentStep: (step) => set({ currentStep: step }),
       
-      completeStep: (step) => set((state) => ({
-        completedSteps: new Set([...state.completedSteps, step]),
-        progress: { ...state.progress, [step]: true }
-      })),
+      completeStep: (step) => set((state) => {
+        const newCompletedSteps = new Set([...state.completedSteps, step]);
+        const newProgress = { ...state.progress, [step]: true };
+        
+        // Show celebration modal for certain step completions
+        const celebrationSteps = ['environment-setup', 'connect-wallet', 'fhe-basics', 'contract-overview', 'testing-playground', 'private-voting'];
+        const shouldShowCelebration = celebrationSteps.includes(step);
+        
+        if (shouldShowCelebration) {
+          const stepNumber = stepOrder.indexOf(step) + 1;
+          const nextStepIndex = stepOrder.indexOf(step) + 1;
+          const nextStep = nextStepIndex < stepOrder.length ? stepOrder[nextStepIndex] : undefined;
+          const nextStepTitle = nextStep ? stepOrder[nextStepIndex] : undefined;
+          
+          return {
+            completedSteps: newCompletedSteps,
+            progress: newProgress,
+            celebrationModal: {
+              isOpen: true,
+              stepTitle: step,
+              stepNumber,
+              nextStepTitle
+            }
+          };
+        }
+        
+        return {
+          completedSteps: newCompletedSteps,
+          progress: newProgress
+        };
+      }),
       
       toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
       
@@ -95,6 +139,27 @@ export const useTutorialStore = create<TutorialState>()(
         const previousStep = stepOrder[stepIndex - 1];
         return get().isStepCompleted(previousStep);
       },
+      
+      triggerConfetti: () => {
+        console.log('🎉 triggerConfetti called!'); // Debug log
+        set({ confettiTrigger: true });
+      },
+      
+      showCelebration: (stepTitle, stepNumber, nextStepTitle) => set({
+        celebrationModal: {
+          isOpen: true,
+          stepTitle,
+          stepNumber,
+          nextStepTitle
+        }
+      }),
+      
+      hideCelebration: () => set((state) => ({
+        celebrationModal: {
+          ...state.celebrationModal,
+          isOpen: false
+        }
+      })),
     }),
     {
       name: 'fhevm-tutorial-progress',

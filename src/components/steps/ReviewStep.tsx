@@ -17,9 +17,13 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTutorialStore } from '@/state/tutorialStore';
+import { useNavigate } from 'react-router-dom';
 import { FhevmQuiz } from '../quiz/FhevmQuiz';
 
 const ReviewStep: React.FC = () => {
+  const { completeStep, showCelebration, getStepNumber } = useTutorialStore();
+  const navigate = useNavigate();
   const achievements = [
     {
       icon: Shield,
@@ -74,7 +78,7 @@ const ReviewStep: React.FC = () => {
       description: "Earn rewards by building innovative FHEVM solutions",
       icon: Trophy,
       action: "View Bounties",
-      href: "https://bounty.zama.ai"
+      href: "https://www.zama.ai/programs/developer-program"
     }
   ];
 
@@ -110,7 +114,7 @@ const ReviewStep: React.FC = () => {
       title: "Zama Whitepaper",
       description: "Deep dive into cryptographic foundations and mathematical principles",
       type: "Research",
-      href: "https://github.com/zama-ai/fhevm-hardhat-template"
+      href: "https://docs.zama.ai/protocol/zama-protocol-litepaper"
     },
     {
       title: "FHEVM Contracts Library",
@@ -158,7 +162,7 @@ const ReviewStep: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-4"
+        className="text-center space-y-4 max-w-4xl mx-auto"
       >
         <div className="flex items-center justify-center gap-3">
           <Trophy className="h-8 w-8 text-yellow-500" />
@@ -177,7 +181,7 @@ const ReviewStep: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <Card>
+        <Card className="max-w-4xl mx-auto">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Star className="h-5 w-5 text-yellow-500" />
@@ -212,7 +216,7 @@ const ReviewStep: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <Card>
+        <Card className="max-w-4xl mx-auto">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Rocket className="h-5 w-5 text-primary" />
@@ -255,7 +259,7 @@ const ReviewStep: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <Card>
+        <Card className="max-w-4xl mx-auto">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-purple-500" />
@@ -295,7 +299,7 @@ const ReviewStep: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
       >
-        <Card>
+        <Card className="max-w-4xl mx-auto">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-blue-500" />
@@ -338,7 +342,7 @@ const ReviewStep: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.0 }}
       >
-        <Card>
+        <Card className="max-w-4xl mx-auto">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-500" />
@@ -348,10 +352,32 @@ const ReviewStep: React.FC = () => {
               Complete this quiz to verify your understanding of FHEVM concepts and identify areas for further study.
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="max-w-3xl mx-auto">
             <FhevmQuiz />
           </CardContent>
         </Card>
+      </motion.div>
+
+      {/* Mark tutorial complete */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.05 }}
+        className="text-center"
+      >
+        <Button
+          size="lg"
+          className="gap-2"
+          onClick={() => {
+            completeStep('review');
+            const stepNum = getStepNumber('review');
+            showCelebration('review', stepNum);
+            navigate('/step/review');
+          }}
+        >
+          Complete Tutorial 100%
+          <CheckCircle2 className="h-4 w-4" />
+        </Button>
       </motion.div>
 
       {/* Final Message */}
@@ -370,7 +396,14 @@ const ReviewStep: React.FC = () => {
           <span>Built with</span>
           <span className="text-primary font-semibold">FHEVM</span>
           <span>by</span>
-          <span className="text-primary font-semibold">Zama</span>
+          <a
+            href="https://x.com/realchriswilder"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary font-semibold underline"
+          >
+            Chris Wilder
+          </a>
         </div>
       </motion.div>
     </div>

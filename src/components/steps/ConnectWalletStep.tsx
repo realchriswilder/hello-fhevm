@@ -56,6 +56,7 @@ export const ConnectWalletStep: React.FC = () => {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChain, isPending: isSwitching } = useSwitchChain();
+  const [showGuardrail, setShowGuardrail] = useState(true);
 
   // Sync Wagmi state to local UI model
   useEffect(() => {
@@ -248,6 +249,43 @@ export const ConnectWalletStep: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
+        {/* Beginner Guardrail Banner */}
+        {showGuardrail && (
+          <Card className="mb-3 border-yellow-400/40">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-yellow-500" /> Beginner guardrail
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-xs space-y-2">
+              {!walletInfo && (
+                <div className="space-y-2">
+                  <p className="text-muted-foreground">No wallet connected. Install or open MetaMask and click Connect.</p>
+                  <div className="flex gap-2">
+                    <Button asChild size="sm" variant="outline">
+                      <a href="https://metamask.io" target="_blank" rel="noreferrer">Install MetaMask</a>
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setShowGuardrail(false)}>Hide</Button>
+                  </div>
+                </div>
+              )}
+              {walletInfo && !isCorrectNetwork && (
+                <div className="space-y-2">
+                  <p className="text-muted-foreground">Wrong network detected. Switch or add Sepolia.</p>
+                  <div className="flex gap-2">
+                    <Button onClick={switchToSepolia} disabled={isSwitching} size="sm" className="gap-2">
+                      <Zap className="h-3 w-3" /> {isSwitching ? 'Switching…' : 'Switch to Sepolia'}
+                    </Button>
+                    <Button variant="outline" onClick={addSepoliaNetwork} size="sm" className="gap-2">
+                      <Plus className="h-3 w-3" /> Add Sepolia
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setShowGuardrail(false)}>Hide</Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
         <Card className="tutorial-step">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

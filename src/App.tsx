@@ -22,6 +22,9 @@ import { WagmiConfig, useAccount, useChainId } from 'wagmi';
 import { useDisconnect, useSwitchChain } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { wagmiConfig, chains } from '@/lib/wallet/wagmi';
+import { Confetti } from '@/components/ui/confetti';
+import { CelebrationModal } from '@/components/ui/celebration-modal';
+import { useTutorialStore } from '@/state/tutorialStore';
 
 const queryClient = new QueryClient();
 
@@ -29,6 +32,13 @@ const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [navOpen, setNavOpen] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { 
+    confettiTrigger, 
+    triggerConfetti, 
+    celebrationModal, 
+    hideCelebration, 
+    setCurrentStep
+  } = useTutorialStore();
 
   useEffect(() => {
     const isDark = localStorage.theme === 'dark' || 
@@ -111,10 +121,42 @@ const App = () => {
             {/* Sidebar Toggle - Fixed position */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="fixed bottom-6 right-6 z-50 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:scale-105 transition-transform"
+              className="fixed bottom-6 right-6 z-50 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              aria-label="Open tutorial guide"
+              title="Click here to open the tutorial guide"
             >
-              📖
+              <span role="img" aria-label="book">📖</span>
+              <span className="hidden sm:inline text-sm font-medium">Click here</span>
             </button>
+            
+            {/* Confetti Component */}
+            <Confetti 
+              trigger={confettiTrigger} 
+              onComplete={() => {
+                console.log('🎉 Confetti animation completed!'); // Debug log
+                // Reset confetti trigger after animation
+                setTimeout(() => {
+                  useTutorialStore.setState({ confettiTrigger: false });
+                }, 100);
+              }} 
+            />
+            
+            {/* Celebration Modal */}
+            <CelebrationModal
+              isOpen={celebrationModal.isOpen}
+              onClose={hideCelebration}
+              stepTitle={celebrationModal.stepTitle}
+              stepNumber={celebrationModal.stepNumber}
+              nextStepTitle={celebrationModal.nextStepTitle}
+              onContinue={() => {
+                if (celebrationModal.nextStepTitle) {
+                  setCurrentStep(celebrationModal.nextStepTitle as any);
+                  // Navigate to next step
+                  window.location.href = `/step/${celebrationModal.nextStepTitle}`;
+                }
+                hideCelebration();
+              }}
+            />
           </div>
             </BrowserRouter>
           </RainbowKitProvider>

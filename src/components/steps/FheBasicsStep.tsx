@@ -45,6 +45,8 @@ export const FheBasicsStep: React.FC = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showTechnicalView, setShowTechnicalView] = useState(false);
+  const [showProofExplainer, setShowProofExplainer] = useState(false);
+  const [showTypeTips, setShowTypeTips] = useState(false);
 
   const copyToClipboard = async (text: string, id: string) => {
     try {
@@ -302,6 +304,64 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
         </Card>
       </motion.div>
 
+      {/* Proof Explainer & Type Sizing Tips (additive) */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.18 }}
+        className="grid md:grid-cols-2 gap-3"
+      >
+        <Card className="tutorial-step">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Info className="h-4 w-4" /> Why do we include a proof?
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-xs">
+            <Button size="sm" variant="outline" onClick={() => setShowProofExplainer(!showProofExplainer)}>
+              {showProofExplainer ? 'Hide' : 'Show'} explainer
+            </Button>
+            <AnimatePresence>
+              {showProofExplainer && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-2">
+                  <p>FHE.fromExternal requires a validity proof to safely ingest user-encrypted inputs. This prevents malformed ciphertexts from corrupting state or leaking info via errors.</p>
+                  <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                    <li>Integrity: ciphertexts are well-formed</li>
+                    <li>Soundness: matches user’s claimed plaintext domain</li>
+                    <li>Consistency: avoids side-channel data-dependent branches</li>
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </CardContent>
+        </Card>
+
+        <Card className="tutorial-step">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Calculator className="h-4 w-4" /> Type sizing tips
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-xs">
+            <Button size="sm" variant="outline" onClick={() => setShowTypeTips(!showTypeTips)}>
+              {showTypeTips ? 'Hide' : 'Show'} tips
+            </Button>
+            <AnimatePresence>
+              {showTypeTips && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-2">
+                  <p>Prefer the smallest encrypted type that fits. Smaller widths can be cheaper/faster to operate on.</p>
+                  <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                    <li>Binary choices: euint8</li>
+                    <li>Small counters: euint16 / euint32</li>
+                    <li>Large values only when necessary: euint64+</li>
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </CardContent>
+        </Card>
+      </motion.div>
+
       {/* FHE Educational Slides */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -550,7 +610,7 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
                       <li>Operations on ciphertexts mirror operations on plaintexts ("homomorphic").</li>
                       <li>Great for voting, counters, private comparisons, risk scoring, more.</li>
                     </ul>
-                    <a className="underline text-xs" href="https://docs.zama.ai/fhe-fundamentals" target="_blank" rel="noreferrer">Zama: FHE Fundamentals</a>
+                    <a className="underline text-xs" href="https://docs.zama.ai/fhevm" target="_blank" rel="noreferrer">Zama: FHEVM Docs</a>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -586,7 +646,7 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
                       <li>Map <code>requestId</code> → proposal to handle the callback.</li>
                       <li>Keep ciphertext permissions tight with <code>allowThis</code>.</li>
                     </ul>
-                    <a className="underline text-xs" href="https://docs.zama.ai/fhevm/getting-started/decryption" target="_blank" rel="noreferrer">Zama: Decryption & Callbacks</a>
+                    <a className="underline text-xs" href="https://docs.zama.ai/protocol/relayer-sdk-guides/fhevm-relayer/decryption" target="_blank" rel="noreferrer">Zama: Decryption & Callbacks</a>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -649,7 +709,7 @@ export async function decryptValue(encryptedBytes: string): Promise<number> {
                       Why this matters: the SDK handles WASM crypto, keys, and relayer coordination so your frontend can encrypt locally and request authorized decryptions of aggregates. Pair this with contract-side <code>requestDecryption</code> and <code>checkSignatures</code> to complete the loop.
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Reference: <a className="underline" href="https://docs.zama.ai/protocol/solidity-guides/getting-started/overview" target="_blank" rel="noreferrer">FHEVM Solidity Overview</a>
+                      Reference: <a className="underline" href="https://docs.zama.ai/fhevm" target="_blank" rel="noreferrer">FHEVM Documentation</a>
                     </p>
                   </div>
                 </AccordionContent>
@@ -661,8 +721,22 @@ export async function decryptValue(encryptedBytes: string): Promise<number> {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-3 text-sm">
-                    <p>Use the smallest type that fits to keep costs down.</p>
-                    <a className="underline text-xs" href="https://docs.zama.ai/fhevm/fundamentals/types" target="_blank" rel="noreferrer">Zama: Types & Operations</a>
+                    <p>Use the smallest encrypted type that fits to keep costs down. Encrypted integers come in widths (euint8/16/32/64/256). Smaller widths are typically cheaper and faster.</p>
+                    <div className="bg-muted/50 rounded-lg p-3 text-xs space-y-1">
+                      <p className="font-semibold">Common operations you can use on encrypted values:</p>
+                      <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                        <li><strong>Arithmetic</strong>: FHE.add, FHE.sub, FHE.mul, FHE.div (plaintext divisor), FHE.rem (plaintext divisor)</li>
+                        <li><strong>Bitwise</strong>: FHE.and, FHE.or, FHE.xor, FHE.not, FHE.shr, FHE.shl, FHE.rotr, FHE.rotl</li>
+                        <li><strong>Comparisons</strong>: FHE.eq, FHE.ne, FHE.ge, FHE.gt, FHE.le, FHE.lt</li>
+                        <li><strong>Ternary select</strong>: FHE.select(ebool condition, a, b)</li>
+                        <li><strong>Random</strong>: FHE.randEuintX() to generate on-chain random encrypted integers</li>
+                      </ul>
+                    </div>
+                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs">
+                      <p className="font-semibold">Tip</p>
+                      <p>Prefer scalar operands when available (e.g., FHE.add(x, 42)) instead of encrypting constants; it saves gas while producing the same encrypted result.</p>
+                    </div>
+                    <a className="underline text-xs" href="https://docs.zama.ai/protocol/solidity-guides/v0.7/smart-contract/operations" target="_blank" rel="noreferrer">Zama: FHEVM Operations Reference</a>
                   </div>
                 </AccordionContent>
               </AccordionItem>
