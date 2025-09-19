@@ -1,3 +1,7 @@
+
+<img width="948" height="638" alt="image" src="https://github.com/user-attachments/assets/bb33832f-5e2a-44d6-86e2-b0c0f7bc6122" />
+
+
 # FHEVM Tutorial 🔐
 
 An interactive tutorial for building confidential applications with Fully Homomorphic Encryption (FHE) on the Zama Protocol.
