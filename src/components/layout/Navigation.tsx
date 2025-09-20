@@ -55,9 +55,16 @@ const steps: {
     estimatedTime: '8 min'
   },
   {
+    id: 'write-contract',
+    title: 'Write Contract',
+    description: 'Build your first FHEVM contract',
+    icon: BookOpen,
+    estimatedTime: '10 min'
+  },
+  {
     id: 'contract-overview',
     title: 'Contract Overview',
-    description: 'Where FHE is used in code',
+    description: 'Vote contract overview',
     icon: BookOpen,
     estimatedTime: '6 min'
   },
@@ -112,7 +119,7 @@ export const Navigation: React.FC<NavigationProps> = ({
       // Prevent confetti when navigating back to already-completed steps
       const isCompleted = isStepCompleted(stepId);
       if (!isCompleted) {
-        const confettiSteps = ['environment-setup', 'connect-wallet', 'fhe-basics', 'contract-overview', 'testing-playground', 'private-voting'];
+        const confettiSteps = ['environment-setup', 'connect-wallet', 'fhe-basics', 'write-contract', 'contract-overview', 'testing-playground', 'private-voting'];
         if (confettiSteps.includes(stepId)) {
           triggerConfetti();
         }

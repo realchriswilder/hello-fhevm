@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
-import { FileText, ArrowRight, Shield, ScrollText, Copy, Check } from 'lucide-react';
+import { FileText, ArrowRight, Shield, ScrollText, Copy, Check, Eye, EyeOff } from 'lucide-react';
 import { useTutorialStore } from '@/state/tutorialStore';
 import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 export const ContractOverviewStep: React.FC = () => {
   const { setCurrentStep, completeStep } = useTutorialStore();
   const navigate = useNavigate();
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [showExplanations, setShowExplanations] = useState(false);
 
   const handleContinue = () => {
     completeStep('contract-overview');
@@ -32,14 +35,123 @@ export const ContractOverviewStep: React.FC = () => {
     }
   };
 
+  // Contract explanations for the voting contract
+  const contractExplanations = [
+    {
+      line: 1,
+      text: "Import FHE types and operations from Zama's library",
+      highlight: "bg-green-100 dark:bg-green-900/30"
+    },
+    {
+      line: 2,
+      text: "Import Sepolia network configuration for FHEVM",
+      highlight: "bg-green-100 dark:bg-green-900/30"
+    },
+    {
+      line: 5,
+      text: "Contract inherits from SepoliaConfig (required for FHEVM)",
+      highlight: "bg-yellow-100 dark:bg-yellow-900/30"
+    },
+    {
+      line: 8,
+      text: "Store encrypted Yes vote count",
+      highlight: "bg-red-100 dark:bg-red-900/30"
+    },
+    {
+      line: 9,
+      text: "Store encrypted No vote count",
+      highlight: "bg-red-100 dark:bg-red-900/30"
+    },
+    {
+      line: 12,
+      text: "Store decrypted Yes count (after reveal)",
+      highlight: "bg-blue-100 dark:bg-blue-900/30"
+    },
+    {
+      line: 13,
+      text: "Store decrypted No count (after reveal)",
+      highlight: "bg-blue-100 dark:bg-blue-900/30"
+    },
+    {
+      line: 20,
+      text: "Convert external encrypted input to internal euint8",
+      highlight: "bg-orange-100 dark:bg-orange-900/30"
+    },
+    {
+      line: 21,
+      text: "Create encrypted constant 1",
+      highlight: "bg-purple-100 dark:bg-purple-900/30"
+    },
+    {
+      line: 22,
+      text: "Create encrypted constant 0",
+      highlight: "bg-purple-100 dark:bg-purple-900/30"
+    },
+    {
+      line: 23,
+      text: "Check if vote equals 1 (encrypted comparison)",
+      highlight: "bg-cyan-100 dark:bg-cyan-900/30"
+    },
+    {
+      line: 25,
+      text: "Add 1 to Yes count if vote is Yes, 0 otherwise",
+      highlight: "bg-pink-100 dark:bg-pink-900/30"
+    },
+    {
+      line: 26,
+      text: "Add 1 to No count if vote is No, 0 otherwise",
+      highlight: "bg-pink-100 dark:bg-pink-900/30"
+    },
+    {
+      line: 28,
+      text: "FHE.allowThis() - allows the contract to decrypt Yes count",
+      highlight: "bg-rose-100 dark:bg-rose-900/30"
+    },
+    {
+      line: 29,
+      text: "FHE.allowThis() - allows the contract to decrypt No count",
+      highlight: "bg-rose-100 dark:bg-rose-900/30"
+    },
+    {
+      line: 35,
+      text: "Convert encrypted Yes count to bytes32 for decryption",
+      highlight: "bg-indigo-100 dark:bg-indigo-900/30"
+    },
+    {
+      line: 36,
+      text: "Convert encrypted No count to bytes32 for decryption",
+      highlight: "bg-indigo-100 dark:bg-indigo-900/30"
+    },
+    {
+      line: 37,
+      text: "Request decryption of both encrypted counts",
+      highlight: "bg-violet-100 dark:bg-violet-900/30"
+    },
+    {
+      line: 42,
+      text: "Verify decryption signatures are valid",
+      highlight: "bg-emerald-100 dark:bg-emerald-900/30"
+    },
+    {
+      line: 45,
+      text: "Store the decrypted Yes count",
+      highlight: "bg-teal-100 dark:bg-teal-900/30"
+    },
+    {
+      line: 46,
+      text: "Store the decrypted No count",
+      highlight: "bg-teal-100 dark:bg-teal-900/30"
+    }
+  ];
+
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4">
-        <Badge variant="secondary"><ScrollText className="h-3 w-3" /> Step 5 of 8</Badge>
-        <h1 className="font-display text-3xl font-bold">Contract Overview</h1>
+        <Badge variant="secondary"><ScrollText className="h-3 w-3" /> Step 6 of 9</Badge>
+        <h1 className="font-display text-3xl font-bold">Voting Contract Overview</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          In this section, we’ll walk together through the entire <em>SimpleVoting</em> contract, line by line.
-          We’ll explain each choice in plain language and show the FHE pattern behind it.
+          In this section, we'll walk together through the entire <em>SimpleVoting</em> contract, line by line.
+          We'll explain each choice in plain language and show the FHE pattern behind it.
         </p>
       </motion.div>
 
@@ -66,15 +178,27 @@ export const ContractOverviewStep: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+
         {/* 1. Imports & Types */}
         <Card className="tutorial-step">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-sm flex items-center justify-center">1</span>
-              Step 1 — Imports & Types (what we’re using and why)
+              Step 1 — Imports & Types (what we're using and why)
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowExplanations(!showExplanations)}
+                className="w-full sm:w-auto"
+              >
+                {showExplanations ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <span className="ml-2">{showExplanations ? 'Hide' : 'Show'} Line Explanations</span>
+              </Button>
+            </div>
             <div className="relative">
               <div className="code-block">
                 <pre className="text-sm overflow-x-auto"><code>{`import { FHE, externalEuint8, euint8, ebool } from "@fhevm/solidity/lib/FHE.sol";
@@ -84,10 +208,28 @@ import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";`}</code><
                 {copiedId === 'imports' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
+            {showExplanations && (
+              <div className="space-y-1 p-3 bg-muted/30 rounded-lg border">
+                <div className="flex items-start gap-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-4 border-green-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">1</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">import {`{`} FHE, externalEuint8, euint8, ebool {`}`} from "@fhevm/solidity/lib/FHE.sol";</code>
+                    <p className="text-muted-foreground text-sm mt-1">Import FHE types and operations from Zama's library</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-4 border-green-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">2</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">import {`{`} SepoliaConfig {`}`} from "@fhevm/solidity/config/ZamaConfig.sol";</code>
+                    <p className="text-muted-foreground text-sm mt-1">Import Sepolia network configuration for FHEVM</p>
+                  </div>
+                </div>
+              </div>
+            )}
             <p className="text-sm text-muted-foreground">
               We start by importing FHE types and helpers. We choose <code>euint8</code> on purpose: our votes are just
               <strong> 0 (No)</strong> or <strong>1 (Yes)</strong>, so an 8‑bit encrypted integer is cheaper than wider types.
-              The helpers you’ll see throughout the contract are the standard FHEVM building blocks:
+              The helpers you'll see throughout the contract are the standard FHEVM building blocks:
               <code>fromExternal</code> to ingest user ciphertexts, <code>add</code>/<code>eq</code>/<code>select</code> for
               computation without branches, <code>allowThis</code> to authorize later decryption requests, and
               <code>requestDecryption</code>/<code>checkSignatures</code> for the reveal ceremony. <code>SepoliaConfig</code>
@@ -105,6 +247,17 @@ import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";`}</code><
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowExplanations(!showExplanations)}
+                className="w-full sm:w-auto"
+              >
+                {showExplanations ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <span className="ml-2">{showExplanations ? 'Hide' : 'Show'} Line Explanations</span>
+              </Button>
+            </div>
             <div className="relative">
               <div className="code-block">
                 <pre className="text-sm overflow-x-auto"><code>{`struct Session {
@@ -122,6 +275,73 @@ import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";`}</code><
                 {copiedId === 'state' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
+            {showExplanations && (
+              <div className="space-y-1 p-3 bg-muted/30 rounded-lg border">
+                <div className="flex items-start gap-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border-l-4 border-yellow-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">1</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">struct Session {`{`}</code>
+                    <p className="text-muted-foreground text-sm mt-1">Define a Session structure to hold voting data</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">2</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">address creator;</code>
+                    <p className="text-muted-foreground text-sm mt-1">Who created this voting session</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">3</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">uint256 endTime;</code>
+                    <p className="text-muted-foreground text-sm mt-1">When voting ends (timestamp)</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">4</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">bool resolved;</code>
+                    <p className="text-muted-foreground text-sm mt-1">Whether results have been revealed</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-red-50 dark:bg-red-900/20 rounded border-l-4 border-red-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">5</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">euint8 yesVotes;</code>
+                    <p className="text-muted-foreground text-sm mt-1">Encrypted count of Yes votes</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-red-50 dark:bg-red-900/20 rounded border-l-4 border-red-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">6</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">euint8 noVotes;</code>
+                    <p className="text-muted-foreground text-sm mt-1">Encrypted count of No votes</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-4 border-green-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">7</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">uint8 revealedYes;</code>
+                    <p className="text-muted-foreground text-sm mt-1">Decrypted Yes count (after reveal)</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-4 border-green-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">8</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">uint8 revealedNo;</code>
+                    <p className="text-muted-foreground text-sm mt-1">Decrypted No count (after reveal)</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-purple-50 dark:bg-purple-900/20 rounded border-l-4 border-purple-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">9</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">uint256 decryptionRequestId;</code>
+                    <p className="text-muted-foreground text-sm mt-1">ID for tracking decryption request</p>
+                  </div>
+                </div>
+              </div>
+            )}
             <p className="text-sm text-muted-foreground">
               Here we define a single <code>Session</code>. The important bit is that the tallies live as
               <code>euint8</code> so all counting happens on encrypted data. The plain <code>uint8</code> fields stay zero
@@ -139,6 +359,17 @@ import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";`}</code><
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowExplanations(!showExplanations)}
+                className="w-full sm:w-auto"
+              >
+                {showExplanations ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <span className="ml-2">{showExplanations ? 'Hide' : 'Show'} Line Explanations</span>
+              </Button>
+            </div>
             <div className="relative">
               <div className="code-block">
                 <pre className="text-sm overflow-x-auto"><code>{`Session memory s = Session({
@@ -156,6 +387,73 @@ import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";`}</code><
                 {copiedId === 'create' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
+            {showExplanations && (
+              <div className="space-y-1 p-3 bg-muted/30 rounded-lg border">
+                <div className="flex items-start gap-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border-l-4 border-yellow-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">1</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">Session memory s = Session({`{`}</code>
+                    <p className="text-muted-foreground text-sm mt-1">Create a new Session in memory</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">2</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">creator: msg.sender,</code>
+                    <p className="text-muted-foreground text-sm mt-1">Set creator to the function caller</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">3</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">endTime: block.timestamp + durationSeconds,</code>
+                    <p className="text-muted-foreground text-sm mt-1">Calculate when voting ends</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">4</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">resolved: false,</code>
+                    <p className="text-muted-foreground text-sm mt-1">Start as unresolved (no results yet)</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-red-50 dark:bg-red-900/20 rounded border-l-4 border-red-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">5</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">yesVotes: FHE.asEuint8(0),</code>
+                    <p className="text-muted-foreground text-sm mt-1">Initialize encrypted Yes count to zero</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-red-50 dark:bg-red-900/20 rounded border-l-4 border-red-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">6</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">noVotes: FHE.asEuint8(0),</code>
+                    <p className="text-muted-foreground text-sm mt-1">Initialize encrypted No count to zero</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-4 border-green-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">7</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">revealedYes: 0,</code>
+                    <p className="text-muted-foreground text-sm mt-1">Start with zero revealed Yes count</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-4 border-green-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">8</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">revealedNo: 0,</code>
+                    <p className="text-muted-foreground text-sm mt-1">Start with zero revealed No count</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-purple-50 dark:bg-purple-900/20 rounded border-l-4 border-purple-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">9</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">decryptionRequestId: 0</code>
+                    <p className="text-muted-foreground text-sm mt-1">No decryption request yet</p>
+                  </div>
+                </div>
+              </div>
+            )}
             <p className="text-sm text-muted-foreground">
               We initialize the session and set both encrypted counters to zero using <code>asEuint8(0)</code>. This ensures
               the first homomorphic add starts from a valid encrypted zero.
@@ -172,6 +470,17 @@ import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";`}</code><
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowExplanations(!showExplanations)}
+                className="w-full sm:w-auto"
+              >
+                {showExplanations ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <span className="ml-2">{showExplanations ? 'Hide' : 'Show'} Line Explanations</span>
+              </Button>
+            </div>
             <div className="relative">
               <div className="code-block">
                 <pre className="text-sm overflow-x-auto"><code>{`euint8 v = FHE.fromExternal(encryptedVote, proof); // 0 or 1
@@ -189,6 +498,66 @@ FHE.allowThis(session.noVotes);`}</code></pre>
                 {copiedId === 'vote' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
+            {showExplanations && (
+              <div className="space-y-1 p-3 bg-muted/30 rounded-lg border">
+                <div className="flex items-start gap-3 p-2 bg-orange-50 dark:bg-orange-900/20 rounded border-l-4 border-orange-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">1</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">euint8 v = FHE.fromExternal(encryptedVote, proof);</code>
+                    <p className="text-muted-foreground text-sm mt-1">Convert external encrypted input to internal euint8</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-purple-50 dark:bg-purple-900/20 rounded border-l-4 border-purple-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">2</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">euint8 one = FHE.asEuint8(1);</code>
+                    <p className="text-muted-foreground text-sm mt-1">Create encrypted constant 1</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-purple-50 dark:bg-purple-900/20 rounded border-l-4 border-purple-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">3</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">euint8 zero = FHE.asEuint8(0);</code>
+                    <p className="text-muted-foreground text-sm mt-1">Create encrypted constant 0</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-cyan-50 dark:bg-cyan-900/20 rounded border-l-4 border-cyan-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">4</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">ebool isYes = FHE.eq(v, one);</code>
+                    <p className="text-muted-foreground text-sm mt-1">Check if vote equals 1 (encrypted comparison)</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-pink-50 dark:bg-pink-900/20 rounded border-l-4 border-pink-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">6</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">session.yesVotes = FHE.add(session.yesVotes, FHE.select(isYes, one, zero));</code>
+                    <p className="text-muted-foreground text-sm mt-1">Add 1 to Yes count if vote is Yes, 0 otherwise</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-pink-50 dark:bg-pink-900/20 rounded border-l-4 border-pink-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">7</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">session.noVotes = FHE.add(session.noVotes, FHE.select(isYes, zero, one));</code>
+                    <p className="text-muted-foreground text-sm mt-1">Add 1 to No count if vote is No, 0 otherwise</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-rose-50 dark:bg-rose-900/20 rounded border-l-4 border-rose-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">9</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">FHE.allowThis(session.yesVotes);</code>
+                    <p className="text-muted-foreground text-sm mt-1">FHE.allowThis() - allows the contract to decrypt Yes count</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-rose-50 dark:bg-rose-900/20 rounded border-l-4 border-rose-500">
+                  <span className="text-muted-foreground w-5 text-right text-sm font-mono">10</span>
+                  <div className="flex-1">
+                    <code className="text-blue-600 font-mono text-sm">FHE.allowThis(session.noVotes);</code>
+                    <p className="text-muted-foreground text-sm mt-1">FHE.allowThis() - allows the contract to decrypt No count</p>
+                  </div>
+                </div>
+              </div>
+            )}
             <p className="text-sm text-muted-foreground">
               You send an encrypted 0/1 and a proof. We convert it with <code>fromExternal</code>, then use
               <code>eq</code> + <code>select</code> to update the correct counter without branching. At no point do we see a
@@ -246,59 +615,159 @@ FHE.allowThis(session.noVotes);`}</code></pre>
           </CardContent>
         </Card>
 
-        {/* 5. requestTallyReveal */}
-        <Card className="tutorial-step">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-sm flex items-center justify-center">5</span>
-              Step 5 — requestTallyReveal(sessionId): asking the network to decrypt totals
-            </CardTitle>
-          </CardHeader>
-        <CardContent className="space-y-3 text-sm">
-            <div className="relative">
-              <div className="code-block">
-                <pre className="text-sm overflow-x-auto"><code>{`bytes32[] memory cts = new bytes32[](2);
-cts[0] = FHE.toBytes32(session.yesVotes);
-cts[1] = FHE.toBytes32(session.noVotes);
-uint256 requestId = FHE.requestDecryption(cts, this.resolveTallyCallback.selector);`}</code></pre>
-              </div>
-              <Button variant="ghost" size="sm" className="absolute top-2 right-2" onClick={() => copyToClipboard(`bytes32[] memory cts = new bytes32[](2);\ncts[0] = FHE.toBytes32(session.yesVotes);\ncts[1] = FHE.toBytes32(session.noVotes);\nuint256 requestId = FHE.requestDecryption(cts, this.resolveTallyCallback.selector);`, 'reveal')}>
-                {copiedId === 'reveal' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              We only ever request decryption of the two aggregate tallies. The network collects signatures and later calls
-              our contract’s callback with the clear totals.
-            </p>
-          </CardContent>
-        </Card>
+         {/* 5. requestTallyReveal */}
+         <Card className="tutorial-step">
+           <CardHeader>
+             <CardTitle className="flex items-center gap-2">
+               <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-sm flex items-center justify-center">5</span>
+               Step 5 — requestTallyReveal(sessionId): asking the network to decrypt totals
+             </CardTitle>
+           </CardHeader>
+           <CardContent className="space-y-3 text-sm">
+             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+               <Button
+                 variant="outline"
+                 size="sm"
+                 onClick={() => setShowExplanations(!showExplanations)}
+                 className="w-full sm:w-auto"
+               >
+                 {showExplanations ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                 <span className="ml-2">{showExplanations ? 'Hide' : 'Show'} Line Explanations</span>
+               </Button>
+             </div>
+             <div className="relative">
+               <div className="code-block">
+                 <pre className="text-sm overflow-x-auto"><code>{`bytes32[] memory cts = new bytes32[](2);
+ cts[0] = FHE.toBytes32(session.yesVotes);
+ cts[1] = FHE.toBytes32(session.noVotes);
+ uint256 requestId = FHE.requestDecryption(cts, this.resolveTallyCallback.selector);`}</code></pre>
+               </div>
+               <Button variant="ghost" size="sm" className="absolute top-2 right-2" onClick={() => copyToClipboard(`bytes32[] memory cts = new bytes32[](2);\ncts[0] = FHE.toBytes32(session.yesVotes);\ncts[1] = FHE.toBytes32(session.noVotes);\nuint256 requestId = FHE.requestDecryption(cts, this.resolveTallyCallback.selector);`, 'reveal')}>
+                 {copiedId === 'reveal' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+               </Button>
+             </div>
+             {showExplanations && (
+               <div className="space-y-1 p-3 bg-muted/30 rounded-lg border">
+                 <div className="flex items-start gap-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border-l-4 border-yellow-500">
+                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">1</span>
+                   <div className="flex-1">
+                     <code className="text-blue-600 font-mono text-sm">bytes32[] memory cts = new bytes32[](2);</code>
+                     <p className="text-muted-foreground text-sm mt-1">Create array to hold encrypted vote counts</p>
+                   </div>
+                 </div>
+                 <div className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-500">
+                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">2</span>
+                   <div className="flex-1">
+                     <code className="text-blue-600 font-mono text-sm">cts[0] = FHE.toBytes32(session.yesVotes);</code>
+                     <p className="text-muted-foreground text-sm mt-1">Convert encrypted Yes count to bytes32 format</p>
+                   </div>
+                 </div>
+                 <div className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-500">
+                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">3</span>
+                   <div className="flex-1">
+                     <code className="text-blue-600 font-mono text-sm">cts[1] = FHE.toBytes32(session.noVotes);</code>
+                     <p className="text-muted-foreground text-sm mt-1">Convert encrypted No count to bytes32 format</p>
+                   </div>
+                 </div>
+                 <div className="flex items-start gap-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-4 border-green-500">
+                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">4</span>
+                   <div className="flex-1">
+                     <code className="text-blue-600 font-mono text-sm">uint256 requestId = FHE.requestDecryption(cts, this.resolveTallyCallback.selector);</code>
+                     <p className="text-muted-foreground text-sm mt-1">Request network to decrypt the vote counts and call our callback</p>
+                   </div>
+                 </div>
+               </div>
+             )}
+             <p className="text-sm text-muted-foreground">
+               We only ever request decryption of the two aggregate tallies. The network collects signatures and later calls
+               our contract's callback with the clear totals.
+             </p>
+           </CardContent>
+         </Card>
 
-        {/* 6. resolveTallyCallback */}
-        <Card className="tutorial-step">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-sm flex items-center justify-center">6</span>
-              Step 6 — resolveTallyCallback(...): verifying and writing the result
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <div className="relative">
-              <div className="code-block">
-                <pre className="text-sm overflow-x-auto"><code>{`FHE.checkSignatures(requestId, signatures);
-uint256 sessionId = sessionIdByRequestId[requestId];
-Session storage s = sessions[sessionId];
-s.revealedYes = revealedYes;
-s.revealedNo = revealedNo;
-s.resolved = true;`}</code></pre>
-              </div>
-              <Button variant="ghost" size="sm" className="absolute top-2 right-2" onClick={() => copyToClipboard(`FHE.checkSignatures(requestId, signatures);\nuint256 sessionId = sessionIdByRequestId[requestId];\nSession storage s = sessions[sessionId];\ns.revealedYes = revealedYes;\ns.revealedNo = revealedNo;\ns.resolved = true;`, 'callback')}>
-                {copiedId === 'callback' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              We first verify signatures with <code>checkSignatures</code>, then persist the clear tallies and mark the
-              session resolved. Only totals are revealed; individual votes remain secret forever.
-            </p>
+         {/* 6. resolveTallyCallback */}
+         <Card className="tutorial-step">
+           <CardHeader>
+             <CardTitle className="flex items-center gap-2">
+               <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-sm flex items-center justify-center">6</span>
+               Step 6 — resolveTallyCallback(...): verifying and writing the result
+             </CardTitle>
+           </CardHeader>
+           <CardContent className="space-y-3 text-sm">
+             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+               <Button
+                 variant="outline"
+                 size="sm"
+                 onClick={() => setShowExplanations(!showExplanations)}
+                 className="w-full sm:w-auto"
+               >
+                 {showExplanations ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                 <span className="ml-2">{showExplanations ? 'Hide' : 'Show'} Line Explanations</span>
+               </Button>
+             </div>
+             <div className="relative">
+               <div className="code-block">
+                 <pre className="text-sm overflow-x-auto"><code>{`FHE.checkSignatures(requestId, signatures);
+ uint256 sessionId = sessionIdByRequestId[requestId];
+ Session storage s = sessions[sessionId];
+ s.revealedYes = revealedYes;
+ s.revealedNo = revealedNo;
+ s.resolved = true;`}</code></pre>
+               </div>
+               <Button variant="ghost" size="sm" className="absolute top-2 right-2" onClick={() => copyToClipboard(`FHE.checkSignatures(requestId, signatures);\nuint256 sessionId = sessionIdByRequestId[requestId];\nSession storage s = sessions[sessionId];\ns.revealedYes = revealedYes;\ns.revealedNo = revealedNo;\ns.resolved = true;`, 'callback')}>
+                 {copiedId === 'callback' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+               </Button>
+             </div>
+             {showExplanations && (
+               <div className="space-y-1 p-3 bg-muted/30 rounded-lg border">
+                 <div className="flex items-start gap-3 p-2 bg-orange-50 dark:bg-orange-900/20 rounded border-l-4 border-orange-500">
+                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">1</span>
+                   <div className="flex-1">
+                     <code className="text-blue-600 font-mono text-sm">FHE.checkSignatures(requestId, signatures);</code>
+                     <p className="text-muted-foreground text-sm mt-1">Verify that the decryption request is legitimate</p>
+                   </div>
+                 </div>
+                 <div className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-500">
+                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">2</span>
+                   <div className="flex-1">
+                     <code className="text-blue-600 font-mono text-sm">uint256 sessionId = sessionIdByRequestId[requestId];</code>
+                     <p className="text-muted-foreground text-sm mt-1">Get the session ID from the decryption request</p>
+                   </div>
+                 </div>
+                 <div className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-500">
+                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">3</span>
+                   <div className="flex-1">
+                     <code className="text-blue-600 font-mono text-sm">Session storage s = sessions[sessionId];</code>
+                     <p className="text-muted-foreground text-sm mt-1">Get reference to the session in storage</p>
+                   </div>
+                 </div>
+                 <div className="flex items-start gap-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-4 border-green-500">
+                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">4</span>
+                   <div className="flex-1">
+                     <code className="text-blue-600 font-mono text-sm">s.revealedYes = revealedYes;</code>
+                     <p className="text-muted-foreground text-sm mt-1">Store the decrypted Yes count</p>
+                   </div>
+                 </div>
+                 <div className="flex items-start gap-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-4 border-green-500">
+                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">5</span>
+                   <div className="flex-1">
+                     <code className="text-blue-600 font-mono text-sm">s.revealedNo = revealedNo;</code>
+                     <p className="text-muted-foreground text-sm mt-1">Store the decrypted No count</p>
+                   </div>
+                 </div>
+                 <div className="flex items-start gap-3 p-2 bg-purple-50 dark:bg-purple-900/20 rounded border-l-4 border-purple-500">
+                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">6</span>
+                   <div className="flex-1">
+                     <code className="text-blue-600 font-mono text-sm">s.resolved = true;</code>
+                     <p className="text-muted-foreground text-sm mt-1">Mark the session as resolved</p>
+                   </div>
+                 </div>
+               </div>
+             )}
+             <p className="text-sm text-muted-foreground">
+               We first verify signatures with <code>checkSignatures</code>, then persist the clear tallies and mark the
+               session resolved. Only totals are revealed; individual votes remain secret forever.
+             </p>
 
         {/* 7. Wrap‑up */}
         <Card className="tutorial-step">

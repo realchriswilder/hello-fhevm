@@ -311,6 +311,146 @@ function resolveTallyCallback(
       ]
     }
   },
+  "write-contract": {
+    layman: {
+      title: "Writing Your First FHEVM Contract 📝",
+      content: [
+        "Now let's write your very first FHEVM contract! We'll build a simple counter that can add and subtract encrypted numbers.",
+        "Think of it like a calculator that works with locked boxes - you can add numbers together without ever seeing what's inside the boxes!",
+        "We'll compare this to a regular Solidity counter so you can see exactly what makes FHEVM special.",
+        "Don't worry if you're new to Solidity - we'll explain every line step by step!"
+      ],
+      keyPoints: [
+        "🔢 Simple counter with encrypted numbers",
+        "➕ Add and subtract without decrypting",
+        "🔍 Compare FHEVM vs regular Solidity",
+        "📚 Learn FHEVM syntax step by step"
+      ],
+      tips: [
+        "💡 Follow along with the code examples",
+        "🔍 Notice the differences from regular Solidity",
+        "📝 Try to understand each function as we go",
+        "❓ Ask questions if anything seems unclear"
+      ]
+    },
+    technical: {
+      title: "FHEVM Counter Contract Deep Dive",
+      content: [
+        "This step walks through building a complete FHEVM contract from scratch. We'll examine each component and compare it to standard Solidity patterns.",
+        "Key concepts covered:",
+        "• FHE imports and configuration",
+        "• Encrypted data types (euint32, externalEuint32)",
+        "• Homomorphic operations (add, sub)",
+        "• Permission management (allowThis, allow)",
+        "• Input validation and proof verification",
+        "",
+        "The contract demonstrates core FHEVM patterns that you'll use in more complex applications."
+      ],
+      code: [
+        {
+          language: "solidity",
+          snippet: `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
+import {SepoliaConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
+
+/// @title A simple FHE counter contract
+/// @author fhevm-hardhat-template
+/// @notice A very basic example contract showing how to work with encrypted data using FHEVM.
+contract FHECounter is SepoliaConfig {
+    euint32 private _count;
+
+    /// @notice Returns the current count
+    /// @return The current encrypted count
+    function getCount() external view returns (euint32) {
+        return _count;
+    }
+
+    /// @notice Increments the counter by a specified encrypted value.
+    /// @param inputEuint32 the encrypted input value
+    /// @param inputProof the input proof
+    /// @dev This example omits overflow/underflow checks for simplicity and readability.
+    /// In a production contract, proper range checks should be implemented.
+    function increment(externalEuint32 inputEuint32, bytes calldata inputProof) external {
+        euint32 encryptedEuint32 = FHE.fromExternal(inputEuint32, inputProof);
+
+        _count = FHE.add(_count, encryptedEuint32);
+
+        FHE.allowThis(_count);
+        FHE.allow(_count, msg.sender);
+    }
+
+    /// @notice Decrements the counter by a specified encrypted value.
+    /// @param inputEuint32 the encrypted input value
+    /// @param inputProof the input proof
+    /// @dev This example omits overflow/underflow checks for simplicity and readability.
+    /// In a production contract, proper range checks should be implemented.
+    function decrement(externalEuint32 inputEuint32, bytes calldata inputProof) external {
+        euint32 encryptedEuint32 = FHE.fromExternal(inputEuint32, inputProof);
+
+        _count = FHE.sub(_count, encryptedEuint32);
+
+        FHE.allowThis(_count);
+        FHE.allow(_count, msg.sender);
+    }
+}`,
+          description: "Complete FHEVM Counter Contract - Your first confidential smart contract!"
+        },
+        {
+          language: "solidity",
+          snippet: `// Regular Solidity Counter (for comparison)
+contract RegularCounter {
+    uint32 private _count;
+    
+    function getCount() external view returns (uint32) {
+        return _count;  // Returns plaintext value
+    }
+    
+    function increment(uint32 value) external {
+        _count += value;  // Direct arithmetic on plaintext
+    }
+    
+    function decrement(uint32 value) external {
+        _count -= value;  // Direct arithmetic on plaintext
+    }
+}`,
+          description: "Regular Solidity Counter - Notice how values are always visible"
+        }
+      ],
+      commands: [
+        {
+          description: "Create new contract file",
+          command: "touch contracts/FHECounter.sol"
+        },
+        {
+          description: "Compile the contract",
+          command: "npx hardhat compile"
+        },
+        {
+          description: "Run tests",
+          command: "npx hardhat test"
+        }
+      ],
+      links: [
+        {
+          title: "FHEVM Solidity Reference",
+          url: "https://docs.zama.ai/protocol/solidity-guides/getting-started/overview",
+          description: "Complete FHEVM Solidity documentation"
+        },
+        {
+          title: "FHE Data Types",
+          url: "https://docs.zama.ai/protocol/solidity-guides/getting-started/data-types",
+          description: "Understanding euint8, euint16, euint32, ebool"
+        },
+        {
+          title: "FHE Operations",
+          url: "https://docs.zama.ai/protocol/solidity-guides/getting-started/operations",
+          description: "Available homomorphic operations"
+        }
+      ]
+    }
+  },
   "private-voting": {
     layman: {
       title: "Live Contract Interaction: Real FHEVM on Sepolia 🗳️",

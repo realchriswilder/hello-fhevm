@@ -6,6 +6,7 @@ export type TutorialStep =
   | 'environment-setup' 
   | 'connect-wallet' 
   | 'fhe-basics' 
+  | 'write-contract'
   | 'contract-overview'
   | 'private-voting' 
   | 'testing-playground'
@@ -44,6 +45,7 @@ const stepOrder: TutorialStep[] = [
   'environment-setup', 
   'connect-wallet',
   'fhe-basics',
+  'write-contract',
   'contract-overview',
   'testing-playground',
   'private-voting',
@@ -69,6 +71,7 @@ export const useTutorialStore = create<TutorialState>()(
         'environment-setup': false,
         'connect-wallet': false,
         'fhe-basics': false,
+        'write-contract': false,
         'contract-overview': false,
         'testing-playground': false,
         'private-voting': false,
@@ -82,7 +85,7 @@ export const useTutorialStore = create<TutorialState>()(
         const newProgress = { ...state.progress, [step]: true };
         
         // Show celebration modal for certain step completions
-        const celebrationSteps = ['environment-setup', 'connect-wallet', 'fhe-basics', 'contract-overview', 'testing-playground', 'private-voting'];
+        const celebrationSteps = ['environment-setup', 'connect-wallet', 'fhe-basics', 'write-contract', 'contract-overview', 'testing-playground', 'private-voting'];
         const shouldShowCelebration = celebrationSteps.includes(step);
         
         if (shouldShowCelebration) {
@@ -121,6 +124,7 @@ export const useTutorialStore = create<TutorialState>()(
           'environment-setup': false,
           'connect-wallet': false,
           'fhe-basics': false,
+          'write-contract': false,
           'contract-overview': false,
           'testing-playground': false,
           'private-voting': false,
