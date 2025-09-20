@@ -249,8 +249,8 @@ function vote(
     s.yesVotes = FHE.add(s.yesVotes, FHE.select(FHE.eq(v, yes), one, FHE.asEuint8(0)));
     s.noVotes = FHE.add(s.noVotes, FHE.select(FHE.eq(v, no), one, FHE.asEuint8(0)));
 
-    FHE.allowThis(s.yesVotes);  // Allow decryption of Yes count
-    FHE.allowThis(s.noVotes);   // Allow decryption of No count
+    FHE.allowThis(s.yesVotes);  // Allow decryption of encrypted value stored in yesVotes
+    FHE.allowThis(s.noVotes);   // Allow decryption of encrypted value stored in noVotes
 
     hasVoted[sessionId][msg.sender] = true;
     emit VoteCast(sessionId, msg.sender);
@@ -546,8 +546,8 @@ contract SimpleVoting is SepoliaConfig {
         s.yesVotes = FHE.add(s.yesVotes, FHE.select(FHE.eq(v, yes), one, FHE.asEuint8(0)));
         s.noVotes = FHE.add(s.noVotes, FHE.select(FHE.eq(v, no), one, FHE.asEuint8(0)));
 
-        FHE.allowThis(s.yesVotes);  // Allow decryption of Yes count
-        FHE.allowThis(s.noVotes);   // Allow decryption of No count
+        FHE.allowThis(s.yesVotes);  // Allow decryption of encrypted value stored in yesVotes
+        FHE.allowThis(s.noVotes);   // Allow decryption of encrypted value stored in noVotes
 
         hasVoted[sessionId][msg.sender] = true;
         emit VoteCast(sessionId, msg.sender);

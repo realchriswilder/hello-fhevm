@@ -104,12 +104,12 @@ export const ContractOverviewStep: React.FC = () => {
     },
     {
       line: 28,
-      text: "FHE.allowThis() - allows the contract to decrypt Yes count",
+      text: "FHE.allowThis() - grants the contract permission to decrypt the encrypted value stored in yesVotes",
       highlight: "bg-rose-100 dark:bg-rose-900/30"
     },
     {
       line: 29,
-      text: "FHE.allowThis() - allows the contract to decrypt No count",
+      text: "FHE.allowThis() - grants the contract permission to decrypt the encrypted value stored in noVotes",
       highlight: "bg-rose-100 dark:bg-rose-900/30"
     },
     {
@@ -546,14 +546,14 @@ FHE.allowThis(session.noVotes);`}</code></pre>
                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">9</span>
                   <div className="flex-1">
                     <code className="text-blue-600 font-mono text-sm">FHE.allowThis(session.yesVotes);</code>
-                    <p className="text-muted-foreground text-sm mt-1">FHE.allowThis() - allows the contract to decrypt Yes count</p>
+                    <p className="text-muted-foreground text-sm mt-1">FHE.allowThis() - grants the contract permission to decrypt the encrypted value stored in yesVotes</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-2 bg-rose-50 dark:bg-rose-900/20 rounded border-l-4 border-rose-500">
                   <span className="text-muted-foreground w-5 text-right text-sm font-mono">10</span>
                   <div className="flex-1">
                     <code className="text-blue-600 font-mono text-sm">FHE.allowThis(session.noVotes);</code>
-                    <p className="text-muted-foreground text-sm mt-1">FHE.allowThis() - allows the contract to decrypt No count</p>
+                    <p className="text-muted-foreground text-sm mt-1">FHE.allowThis() - grants the contract permission to decrypt the encrypted value stored in noVotes</p>
                   </div>
                 </div>
               </div>

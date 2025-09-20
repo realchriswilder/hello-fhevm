@@ -139,12 +139,12 @@ const contractExplanations = [
   },
   {
     line: 29,
-    text: "FHE.allowThis() - allows the contract to decrypt this value",
+    text: "FHE.allowThis() - grants the contract permission to decrypt the encrypted value stored in _count",
     highlight: "bg-pink-100 dark:bg-pink-900/30"
   },
   {
     line: 30,
-    text: "FHE.allow() - allows the caller to decrypt this value",
+    text: "FHE.allow() - grants the caller permission to decrypt the encrypted value stored in _count",
     highlight: "bg-pink-100 dark:bg-pink-900/30"
   },
   {
@@ -179,12 +179,12 @@ const contractExplanations = [
   },
   {
     line: 43,
-    text: "FHE.allowThis() - allows the contract to decrypt the result",
+    text: "FHE.allowThis() - grants the contract permission to decrypt the encrypted value stored in _count",
     highlight: "bg-rose-100 dark:bg-rose-900/30"
   },
   {
     line: 44,
-    text: "FHE.allow() - allows the caller to decrypt the result",
+    text: "FHE.allow() - grants the caller permission to decrypt the encrypted value stored in _count",
     highlight: "bg-rose-100 dark:bg-rose-900/30"
   }
 ];
