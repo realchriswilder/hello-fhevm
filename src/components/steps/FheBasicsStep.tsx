@@ -60,8 +60,8 @@ export const FheBasicsStep: React.FC = () => {
 
   const handleContinue = () => {
     completeStep('fhe-basics');
-    setCurrentStep('contract-overview');
-    navigate('/step/contract-overview');
+    setCurrentStep('write-contract');
+    navigate('/step/write-contract');
   };
 
   const nextSlide = () => {
@@ -753,11 +753,11 @@ export async function decryptValue(encryptedBytes: string): Promise<number> {
         className="text-center"
       >
         <Button onClick={handleContinue} size="lg" className="gap-2">
-          Continue to Contract Overview
+          Continue to Write Contract
           <ArrowRight className="h-4 w-4" />
         </Button>
         <p className="text-xs text-muted-foreground mt-2">
-          Ready to dive into the smart contract implementation!
+          Ready to write your first FHEVM contract!
         </p>
       </motion.div>
     </div>

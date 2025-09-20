@@ -13,6 +13,7 @@ import {
   Wifi,
   Shield,
   Vote,
+  Rocket,
   BookOpen,
   TestTube
 } from 'lucide-react';
@@ -67,6 +68,13 @@ const steps: {
     description: 'Vote contract overview',
     icon: BookOpen,
     estimatedTime: '6 min'
+  },
+  {
+    id: 'deploy-test-counter',
+    title: 'Simulate & Test Counter',
+    description: 'Simulate FHE counter deployment and test live',
+    icon: Rocket,
+    estimatedTime: '8 min'
   },
   {
     id: 'testing-playground',

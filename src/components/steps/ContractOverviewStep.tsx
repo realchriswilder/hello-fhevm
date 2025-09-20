@@ -17,8 +17,8 @@ export const ContractOverviewStep: React.FC = () => {
 
   const handleContinue = () => {
     completeStep('contract-overview');
-    setCurrentStep('testing-playground');
-    navigate('/step/testing-playground');
+    setCurrentStep('deploy-test-counter');
+    navigate('/step/deploy-test-counter');
   };
 
   const openSolidityFile = () => {

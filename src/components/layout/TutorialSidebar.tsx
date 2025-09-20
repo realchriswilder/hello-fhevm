@@ -707,6 +707,76 @@ VIEW HELPER
       ]
     }
   },
+  "deploy-test-counter": {
+    layman: {
+      title: "Deploy & Test FHE Counter: Real Blockchain Experience 🚀",
+      content: [
+        "Now it's time to deploy the FHE counter contract to Sepolia testnet and interact with it in real-time!",
+        "You'll experience the full FHEVM workflow: deploy a contract, encrypt values, perform homomorphic operations, and decrypt results.",
+        "This gives you hands-on experience with how FHE contracts work on a live blockchain - no more simulations!"
+      ],
+      keyPoints: [
+        "🚀 Deploy FHE counter to Sepolia testnet",
+        "🔐 Encrypt values using your wallet",
+        "➕ Perform homomorphic increment/decrement operations",
+        "🔍 Decrypt and view results in real-time"
+      ]
+    },
+    technical: {
+      title: "Live FHE Counter Deployment & Testing",
+      content: [
+        "Deploy FHECounter contract to Sepolia using your connected wallet. The contract uses euint32 for encrypted counter storage.",
+        "Test initial state: getCount() returns bytes32(0) indicating uninitialized encrypted value.",
+        "Increment test: encrypt value 1 using fhevm.createEncryptedInput(), call increment() with encrypted input and proof, verify count increased by 1.",
+        "Decrement test: encrypt value 1, call decrement(), verify count decreased by 1 back to 0.",
+        "All operations use FHEVM's encryption/decryption workflow with proper proof generation and verification.",
+        "Monitor transaction status, gas usage, and encrypted state changes through the terminal interface."
+      ],
+      code: [
+        {
+          language: "typescript",
+          snippet: `// Deploy FHECounter contract
+const factory = await ethers.getContractFactory("FHECounter");
+const fheCounter = await factory.deploy();
+const address = await fheCounter.getAddress();
+
+// Encrypt value for homomorphic operation
+const encryptedOne = await fhevm
+  .createEncryptedInput(address, signer.address)
+  .add32(1)
+  .encrypt();
+
+// Call increment with encrypted input
+const tx = await fheCounter
+  .connect(signer)
+  .increment(encryptedOne.handles[0], encryptedOne.inputProof);
+await tx.wait();
+
+// Decrypt and verify result
+const encryptedCount = await fheCounter.getCount();
+const clearCount = await fhevm.userDecryptEuint(
+  FhevmType.euint32,
+  encryptedCount,
+  address,
+  signer
+);`,
+          description: "Complete FHE counter deployment and testing workflow"
+        }
+      ],
+      links: [
+        {
+          title: "FHEVM Deployment Guide",
+          url: "https://docs.zama.ai/",
+          description: "Official FHEVM deployment and testing documentation"
+        },
+        {
+          title: "Sepolia Testnet Faucet",
+          url: "https://sepoliafaucet.com/",
+          description: "Get test ETH for Sepolia transactions"
+        }
+      ]
+    }
+  },
   "testing-playground": {
     layman: {
       title: "FHE Testing Playground: Learn by Doing 🧪",

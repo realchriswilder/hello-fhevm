@@ -19,6 +19,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import { useTutorialStore } from '@/state/tutorialStore';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 const FHECounterContract = `// SPDX-License-Identifier: MIT
@@ -118,18 +119,18 @@ const contractExplanations = [
   },
   {
     line: 22,
-    text: "Function takes encrypted input + proof (not plaintext!)",
+    text: "Function parameters: encrypted input + proof",
     highlight: "bg-orange-100 dark:bg-orange-900/30"
   },
   {
     line: 23,
-    text: "Convert external encrypted input to internal euint32",
+    text: "Function takes encrypted input + proof (not plaintext!)",
     highlight: "bg-orange-100 dark:bg-orange-900/30"
   },
   {
     line: 25,
-    text: "Homomorphic addition on encrypted values",
-    highlight: "bg-purple-100 dark:bg-purple-900/30"
+    text: "FHE.fromExternal() - converts external encrypted input to internal euint32",
+    highlight: "bg-orange-100 dark:bg-orange-900/30"
   },
   {
     line: 27,
@@ -189,7 +190,8 @@ const contractExplanations = [
 ];
 
 export const WriteContractStep: React.FC = () => {
-  const { completeStep } = useTutorialStore();
+  const { completeStep, setCurrentStep } = useTutorialStore();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'fhe' | 'regular'>('fhe');
   const [showExplanations, setShowExplanations] = useState(false);
   const [copiedText, setCopiedText] = useState<string | null>(null);
@@ -225,6 +227,12 @@ export const WriteContractStep: React.FC = () => {
   };
 
   const isStepComplete = (stepNumber: number) => completedSteps.has(stepNumber);
+
+  const handleContinue = () => {
+    completeStep('write-contract');
+    setCurrentStep('contract-overview');
+    navigate('/step/contract-overview');
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
@@ -496,7 +504,7 @@ export const WriteContractStep: React.FC = () => {
                 You've learned the basics of FHEVM contracts! Next, we'll explore a more complex voting contract.
               </p>
               <Button
-                onClick={() => completeStep('write-contract')}
+                onClick={handleContinue}
                 size="lg"
                 className="gap-2"
               >

@@ -13,6 +13,7 @@ import { ConnectWalletStep } from "@/components/steps/ConnectWalletStep";
 import { FheBasicsStep } from "@/components/steps/FheBasicsStep";
 import { WriteContractStep } from "@/components/steps/WriteContractStep";
 import { ContractOverviewStep } from "@/components/steps/ContractOverviewStep";
+import { DeployTestCounterStep } from "@/components/steps/DeployTestCounterStep";
 import { PrivateVotingStep } from "@/components/steps/PrivateVotingStep";
 import { TestingPlaygroundStep } from "@/components/steps/TestingPlaygroundStep";
 import ReviewStep from "@/components/steps/ReviewStep";
@@ -107,6 +108,7 @@ const App = () => {
                   <Route path="/step/fhe-basics" element={<FheBasicsStep />} />
                   <Route path="/step/write-contract" element={<WriteContractStep />} />
                   <Route path="/step/contract-overview" element={<ContractOverviewStep />} />
+                  <Route path="/step/deploy-test-counter" element={<DeployTestCounterStep />} />
                   <Route path="/step/private-voting" element={<PrivateVotingStep />} />
                   <Route path="/step/testing-playground" element={<TestingPlaygroundStep />} />
                   <Route path="/step/review" element={<ReviewStep />} />

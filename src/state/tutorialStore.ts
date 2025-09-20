@@ -8,6 +8,7 @@ export type TutorialStep =
   | 'fhe-basics' 
   | 'write-contract'
   | 'contract-overview'
+  | 'deploy-test-counter'
   | 'private-voting' 
   | 'testing-playground'
   | 'review';
@@ -47,6 +48,7 @@ const stepOrder: TutorialStep[] = [
   'fhe-basics',
   'write-contract',
   'contract-overview',
+  'deploy-test-counter',
   'testing-playground',
   'private-voting',
   'review'
@@ -73,6 +75,7 @@ export const useTutorialStore = create<TutorialState>()(
         'fhe-basics': false,
         'write-contract': false,
         'contract-overview': false,
+        'deploy-test-counter': false,
         'testing-playground': false,
         'private-voting': false,
         'review': false,
@@ -126,6 +129,7 @@ export const useTutorialStore = create<TutorialState>()(
           'fhe-basics': false,
           'write-contract': false,
           'contract-overview': false,
+          'deploy-test-counter': false,
           'testing-playground': false,
           'private-voting': false,
           'review': false,
