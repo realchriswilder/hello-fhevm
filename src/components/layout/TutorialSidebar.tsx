@@ -313,18 +313,21 @@ function resolveTallyCallback(
   },
   "write-contract": {
     layman: {
-      title: "Writing Your First FHEVM Contract 📝",
+      title: "Writing Your First FHEVM Contract & Frontend 📝",
       content: [
         "Now let's write your very first FHEVM contract! We'll build a simple counter that can add and subtract encrypted numbers.",
         "Think of it like a calculator that works with locked boxes - you can add numbers together without ever seeing what's inside the boxes!",
         "We'll compare this to a regular Solidity counter so you can see exactly what makes FHEVM special.",
-        "Don't worry if you're new to Solidity - we'll explain every line step by step!"
+        "Plus, we'll show you how to build the frontend that interacts with your FHEVM contract using the Zama Relayer SDK!",
+        "Don't worry if you're new to Solidity or frontend development - we'll explain every line step by step!"
       ],
       keyPoints: [
         "🔢 Simple counter with encrypted numbers",
         "➕ Add and subtract without decrypting",
         "🔍 Compare FHEVM vs regular Solidity",
-        "📚 Learn FHEVM syntax step by step"
+        "📚 Learn FHEVM syntax step by step",
+        "🌐 Build frontend with Zama Relayer SDK",
+        "📱 Complete dApp development guide"
       ],
       tips: [
         "💡 Follow along with the code examples",
@@ -334,17 +337,23 @@ function resolveTallyCallback(
       ]
     },
     technical: {
-      title: "FHEVM Counter Contract Deep Dive",
+      title: "FHEVM Contract & Frontend Development",
       content: [
-        "This step walks through building a complete FHEVM contract from scratch. We'll examine each component and compare it to standard Solidity patterns.",
-        "Key concepts covered:",
+        "This step walks through building a complete FHEVM contract from scratch and the frontend that interacts with it. We'll examine each component and compare it to standard Solidity patterns.",
+        "Contract concepts covered:",
         "• FHE imports and configuration",
         "• Encrypted data types (euint32, externalEuint32)",
         "• Homomorphic operations (add, sub)",
         "• Permission management (allowThis, allow)",
         "• Input validation and proof verification",
         "",
-        "The contract demonstrates core FHEVM patterns that you'll use in more complex applications."
+        "Frontend concepts covered:",
+        "• Zama Relayer SDK integration",
+        "• Client-side encryption with FHEVM",
+        "• Contract interaction patterns",
+        "• NPM vs CDN installation options",
+        "",
+        "The complete guide demonstrates core FHEVM patterns and frontend integration that you'll use in more complex applications."
       ],
       code: [
         {

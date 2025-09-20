@@ -57,10 +57,10 @@ const steps: {
   },
   {
     id: 'write-contract',
-    title: 'Write Contract',
-    description: 'Build your first FHEVM contract',
+    title: 'Write Contract & FE',
+    description: 'Build FHEVM contract + Frontend guide',
     icon: BookOpen,
-    estimatedTime: '10 min'
+    estimatedTime: '15 min'
   },
   {
     id: 'contract-overview',

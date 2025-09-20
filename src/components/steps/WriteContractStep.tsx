@@ -16,7 +16,9 @@ import {
   ArrowRight,
   Lightbulb,
   Eye,
-  EyeOff
+  EyeOff,
+  Globe,
+  Info
 } from 'lucide-react';
 import { useTutorialStore } from '@/state/tutorialStore';
 import { useNavigate } from 'react-router-dom';
@@ -417,7 +419,7 @@ export const WriteContractStep: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 {
                   step: 1,
@@ -453,22 +455,24 @@ export const WriteContractStep: React.FC = () => {
                 <div
                   key={item.step}
                   className={cn(
-                    "flex flex-col sm:flex-row items-start gap-4 p-4 rounded-lg border transition-all",
+                    "flex flex-col gap-4 p-4 rounded-lg border transition-all h-full",
                     isStepComplete(item.step) 
                       ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800" 
                       : "bg-muted/50 dark:bg-muted/30 hover:bg-muted dark:hover:bg-muted/50"
                   )}
                 >
-                  <div className={cn(
-                    "flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold flex-shrink-0",
-                    isStepComplete(item.step)
-                      ? "bg-green-500 text-white"
-                      : "bg-primary text-primary-foreground"
-                  )}>
-                    {isStepComplete(item.step) ? <CheckCircle className="h-4 w-4" /> : item.step}
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold flex-shrink-0",
+                      isStepComplete(item.step)
+                        ? "bg-green-500 text-white"
+                        : "bg-primary text-primary-foreground"
+                    )}>
+                      {isStepComplete(item.step) ? <CheckCircle className="h-4 w-4" /> : item.step}
+                    </div>
+                    <h4 className="font-semibold text-lg">{item.title}</h4>
                   </div>
-                  <div className="flex-1 space-y-2 min-w-0">
-                    <h4 className="font-semibold">{item.title}</h4>
+                  <div className="space-y-3 flex-1">
                     <p className="text-sm text-muted-foreground">{item.description}</p>
                     <p className="text-xs bg-muted dark:bg-muted/50 p-2 rounded font-mono break-words">{item.action}</p>
                     {!isStepComplete(item.step) && (
@@ -476,7 +480,7 @@ export const WriteContractStep: React.FC = () => {
                         size="sm"
                         variant="outline"
                         onClick={() => markStepComplete(item.step)}
-                        className="mt-2 w-full sm:w-auto"
+                        className="w-full"
                       >
                         Mark as Complete
                       </Button>
@@ -489,11 +493,281 @@ export const WriteContractStep: React.FC = () => {
         </Card>
       </motion.div>
 
-      {/* Next Steps */}
+      {/* Learning Guide - 2x2 Grid */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+      >
+        {/* Step 1: Contract Writing */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-blue-500" />
+              Step 1: Write Contract
+            </CardTitle>
+            <CardDescription>
+              Use the SimpleVoting contract from the repo
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                The <code>vote-app/contracts/SimpleVoting.sol</code> contract is already in this repo with all the FHE voting logic you need.
+              </p>
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="font-mono text-xs">
+                  <div>📄 vote-app/contracts/SimpleVoting.sol</div>
+                  <div className="text-muted-foreground">• FHE voting operations</div>
+                  <div className="text-muted-foreground">• Session management</div>
+                  <div className="text-muted-foreground">• Encrypted vote storage</div>
+                  <div className="text-muted-foreground">• Tally decryption</div>
+                </div>
+              </div>
+              <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded p-2">
+                <p className="text-xs text-green-700 dark:text-green-300">
+                  ✅ <strong>Ready to use!</strong> This contract is already deployed and working in the tutorial.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Step 2: Frontend Setup */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="h-5 w-5 text-green-500" />
+              Step 2: Build Frontend
+            </CardTitle>
+            <CardDescription>
+              Create the user interface
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Build a React frontend that can encrypt user input and interact with your contract.
+              </p>
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="font-mono text-xs">
+                  <div>🌐 src/ui/App.tsx</div>
+                  <div className="text-muted-foreground">• User interface</div>
+                  <div className="text-muted-foreground">• Vote buttons</div>
+                  <div className="text-muted-foreground">• Wallet connection</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Step 3: FHE Integration */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Code className="h-5 w-5 text-purple-500" />
+              Step 3: FHE Setup
+            </CardTitle>
+            <CardDescription>
+              Initialize FHEVM and encryption
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Set up the FHEVM Relayer SDK to handle encryption and WASM loading.
+              </p>
+              <div className="bg-muted dark:bg-muted/50 p-3 rounded-lg border border-border">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="font-mono text-xs text-foreground">
+                    <div>🔐 src/fhe.ts - Encrypt user votes</div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowExplanations(!showExplanations)}
+                    className="h-6 px-2 text-xs hover:bg-muted-foreground/10 dark:hover:bg-muted-foreground/20"
+                  >
+                    {showExplanations ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                    <span className="ml-1">{showExplanations ? 'Hide' : 'Show'} Code</span>
+                  </Button>
+                </div>
+                {showExplanations && (
+                  <pre className="text-xs font-mono leading-relaxed whitespace-pre-wrap bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3 rounded border border-gray-300 dark:border-gray-600">
+{`export async function encryptYesNo(choice: 'yes' | 'no', contractAddress: string, userAddress: string): Promise<string> {
+  const fhe = await initializeFheInstance();
+  // encode Yes as 1 and No as 0 (euint64)
+  const value = choice === 'yes' ? 1 : 0;
+  const encryptedInput = fhe.createEncryptedInput(contractAddress, userAddress);
+  const result = await encryptedInput.add64(value).encrypt();
+  const bytes = result.handles[0] as Uint8Array;
+  const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
+  const handle = \`0x\${hex}\`;
+  return handle; // externalEuint64-compatible handle (0x...)
+}`}
+                  </pre>
+                )}
+                <div className="text-muted-foreground dark:text-muted-foreground/80 text-xs mt-2">
+                  • SDK initialization • Encrypt user input • Generate proofs
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Step 4: Contract Interaction */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Play className="h-5 w-5 text-orange-500" />
+              Step 4: Connect & Deploy
+            </CardTitle>
+            <CardDescription>
+              Deploy and test your contract
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Deploy your contract to Sepolia and test the complete voting flow.
+              </p>
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="font-mono text-xs">
+                  <div>🚀 Deploy & Test</div>
+                  <div className="text-muted-foreground">• Contract deployment</div>
+                  <div className="text-muted-foreground">• Live testing</div>
+                  <div className="text-muted-foreground">• Real transactions</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Frontend Codebase Info */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.0 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-blue-500" />
+              Frontend Codebase Structure
+            </CardTitle>
+            <CardDescription>
+              This tutorial includes a complete frontend in the <code>vote-app/</code> directory
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* File Structure */}
+            <div>
+              <h4 className="font-semibold mb-3">📁 Complete Frontend Structure</h4>
+              <div className="bg-muted p-4 rounded-lg font-mono text-sm">
+                <div className="text-green-600 dark:text-green-400">vote-app/</div>
+                <div className="ml-4">├── src/</div>
+                <div className="ml-8">├── fhe.ts          <span className="text-muted-foreground">// FHEVM setup & encryption</span></div>
+                <div className="ml-8">├── service.ts       <span className="text-muted-foreground">// Contract interaction</span></div>
+                <div className="ml-8">├── contracts.ts     <span className="text-muted-foreground">// Contract ABI & address</span></div>
+                <div className="ml-8">├── main.tsx         <span className="text-muted-foreground">// App entry point</span></div>
+                <div className="ml-8">└── ui/</div>
+                <div className="ml-12">    └── App.tsx      <span className="text-muted-foreground">// Main UI component</span></div>
+                <div className="ml-4">├── contracts/</div>
+                <div className="ml-8">    └── SimpleVoting.sol <span className="text-muted-foreground">// Voting contract</span></div>
+                <div className="ml-4">└── package.json</div>
+              </div>
+            </div>
+
+            {/* Key Files Explanation */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <h4 className="font-semibold">🔐 fhe.ts - FHEVM Integration</h4>
+                <div className="bg-muted p-3 rounded-lg text-xs">
+                  <div className="font-mono mb-2">// Loads @zama-fhe/relayer-sdk</div>
+                  <div className="text-muted-foreground">• Uses official Zama NPM package</div>
+                  <div className="text-muted-foreground">• ESM format with initSDK()</div>
+                  <div className="text-muted-foreground">• Handles WASM loading</div>
+                  <div className="text-muted-foreground">• Encrypts user votes</div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="font-semibold">🌐 App.tsx - User Interface</h4>
+                <div className="bg-muted p-3 rounded-lg text-xs">
+                  <div className="font-mono mb-2">// Main voting interface</div>
+                  <div className="text-muted-foreground">• Yes/No vote buttons</div>
+                  <div className="text-muted-foreground">• Wallet connection</div>
+                  <div className="text-muted-foreground">• Session management</div>
+                  <div className="text-muted-foreground">• Real-time vote counting</div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="font-semibold">⚡ service.ts - Contract Calls</h4>
+                <div className="bg-muted p-3 rounded-lg text-xs">
+                  <div className="font-mono mb-2">// Blockchain interaction</div>
+                  <div className="text-muted-foreground">• Viem wallet client</div>
+                  <div className="text-muted-foreground">• Contract function calls</div>
+                  <div className="text-muted-foreground">• Transaction handling</div>
+                  <div className="text-muted-foreground">• Event parsing</div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="font-semibold">📋 contracts.ts - ABI & Address</h4>
+                <div className="bg-muted p-3 rounded-lg text-xs">
+                  <div className="font-mono mb-2">// Contract configuration</div>
+                  <div className="text-muted-foreground">• Contract ABI</div>
+                  <div className="text-muted-foreground">• Contract address</div>
+                  <div className="text-muted-foreground">• Type definitions</div>
+                  <div className="text-muted-foreground">• Environment variables</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Usage Instructions */}
+            <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">🚀 How to Use This Frontend</h4>
+              <div className="text-sm text-blue-700 dark:text-blue-300 space-y-3">
+                <div>
+                  <p><strong>Option 1 - NPM Package (Recommended):</strong></p>
+                  <div className="bg-white dark:bg-gray-800 p-3 rounded font-mono text-xs space-y-1">
+                    <div># Install the official Zama FHE Relayer SDK</div>
+                    <div className="text-green-600">npm install @zama-fhe/relayer-sdk</div>
+                    <div className="text-green-600">npm install viem @rainbow-me/rainbowkit</div>
+                    <div className="mt-2 text-yellow-600"># Add to package.json:</div>
+                    <div className="text-yellow-600">"type": "module"</div>
+                  </div>
+                </div>
+                
+                <div>
+                  <p><strong>Option 2 - CDN (Alternative):</strong></p>
+                  <div className="bg-white dark:bg-gray-800 p-3 rounded font-mono text-xs">
+                    <div>&lt;script src="https://cdn.zama.ai/relayer-sdk-js/0.2.0/relayer-sdk-js.umd.cjs"&gt;&lt;/script&gt;</div>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded p-2">
+                  <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-200 mb-1">📝 Important Notes:</p>
+                  <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
+                    <li>• The SDK uses ESM format - set <code>"type": "module"</code> in package.json</li>
+                    <li>• For CommonJS projects, use: <code>import from '@zama-fhe/relayer-sdk/bundle'</code></li>
+                    <li>• Clone the repo and you'll have a working FHE voting app!</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Next Steps */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2 }}
         className="text-center space-y-4"
       >
         <Card>
