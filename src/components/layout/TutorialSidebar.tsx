@@ -418,20 +418,6 @@ contract RegularCounter {
           description: "Regular Solidity Counter - Notice how values are always visible"
         }
       ],
-      commands: [
-        {
-          description: "Create new contract file",
-          command: "touch contracts/FHECounter.sol"
-        },
-        {
-          description: "Compile the contract",
-          command: "npx hardhat compile"
-        },
-        {
-          description: "Run tests",
-          command: "npx hardhat test"
-        }
-      ],
       links: [
         {
           title: "FHEVM Solidity Reference",

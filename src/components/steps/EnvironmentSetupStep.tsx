@@ -58,7 +58,7 @@ export const EnvironmentSetupStep: React.FC = () => {
     {
       id: 'wallet',
       name: 'MetaMask Extension',
-      description: 'Browser wallet extension',
+      description: 'Browser wallet extension (checked in Step 3)',
       status: 'pending'
     },
     {
@@ -222,17 +222,16 @@ export const EnvironmentSetupStep: React.FC = () => {
       };
       setChecks([...newChecks]);
 
-      // Check MetaMask
+      // Check MetaMask (always pass - Step 3 will handle actual connection)
       setChecks(prev => prev.map(check => 
         check.id === 'wallet' ? { ...check, status: 'checking' } : check
       ));
       
       await new Promise(resolve => setTimeout(resolve, 600));
-      const hasMetaMask = typeof window !== 'undefined' && (window as any).ethereum;
       newChecks[2] = {
         ...newChecks[2],
-        status: hasMetaMask ? 'success' : 'error',
-        errorMessage: hasMetaMask ? undefined : 'MetaMask extension not detected'
+        status: 'success',
+        version: 'Will be checked in Step 3'
       };
       setChecks([...newChecks]);
 
@@ -259,6 +258,7 @@ export const EnvironmentSetupStep: React.FC = () => {
     await new Promise(r => setTimeout(r, 500));
     setCompatCheck({ ok: true, message: 'FHEVM compatibility looks good (contracts use euint8, fromExternal, allowThis, requestDecryption, checkSignatures).' });
   };
+
 
   useEffect(() => {
     // Auto-run checks on component mount

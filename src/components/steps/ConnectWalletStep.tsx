@@ -304,6 +304,19 @@ export const ConnectWalletStep: React.FC = () => {
                   <p className="text-sm text-muted-foreground">
                     Connect your wallet to continue with the tutorial
                   </p>
+                  <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-3">
+                    <div className="flex items-start gap-2">
+                      <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <div className="space-y-1">
+                        <p className="text-xs font-semibold text-blue-900 dark:text-blue-100">
+                          Real Wallet Required for Voting
+                        </p>
+                        <p className="text-xs text-blue-700 dark:text-blue-300">
+                          Step 9 (Private Voting Demo) requires a real wallet connection to interact with the FHEVM voting contract on Sepolia testnet. You'll need to sign transactions to cast encrypted votes.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div className="flex justify-center">
                   <ConnectButton />
@@ -357,6 +370,21 @@ export const ConnectWalletStep: React.FC = () => {
                         isCorrectNetwork ? 'bg-success animate-pulse' : 'bg-destructive'
                       }`} />
                       <p className="font-semibold text-xs">{walletInfo.chainName}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Voting Requirement Info */}
+                <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold text-green-900 dark:text-green-100">
+                        Ready for Real Voting
+                      </p>
+                      <p className="text-xs text-green-700 dark:text-green-300">
+                        Your wallet is connected and ready for Step 9 (Private Voting Demo). You'll be able to cast encrypted votes on the FHEVM voting contract.
+                      </p>
                     </div>
                   </div>
                 </div>
