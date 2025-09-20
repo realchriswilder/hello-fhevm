@@ -664,6 +664,21 @@ export const TestingPlaygroundStep: React.FC = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
+              
+              {/* Performance Note */}
+              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-blue-900 dark:text-blue-100">
+                      Performance Note
+                    </p>
+                    <p className="text-xs text-blue-700 dark:text-blue-300">
+                      The initial run of scenarios takes approximately 5 seconds to begin encryption and submit operations. This is normal for FHE operations which require cryptographic processing.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

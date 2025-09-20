@@ -64,12 +64,12 @@ const tutorialContent: Record<TutorialStep, TutorialContent> = {
       links: [
         {
           title: "Zama FHEVM Documentation",
-          url: "https://docs.zama.ai/fhevm",
+          url: "https://docs.zama.ai",
           description: "Complete technical documentation"
         },
         {
           title: "FHE Fundamentals",
-          url: "https://docs.zama.ai/fhe-fundamentals",
+          url: "https://docs.zama.ai/protocol/protocol/overview/library",
           description: "Deep dive into FHE concepts"
         },
         {
@@ -915,12 +915,12 @@ function simulateVoteProcessing() {
       links: [
         {
           title: "FHEVM Production Guide",
-          url: "https://docs.zama.ai/fhevm/getting-started/deployment",
+          url: "https://docs.zama.ai/",
           description: "Deploy to mainnet"
         },
         {
           title: "Advanced FHE Patterns", 
-          url: "https://docs.zama.ai/fhevm/tutorials/advanced",
+          url: "https://docs.zama.ai/protocol/examples/basic/encryption/fhe-encrypt-multiple-values/",
           description: "Complex use cases and optimizations"
         },
         {
@@ -930,12 +930,12 @@ function simulateVoteProcessing() {
         },
         {
           title: "FHEVM Contracts Library",
-          url: "https://docs.zama.ai/fhevm-contracts",
+          url: "https://docs.zama.ai",
           description: "Pre-built confidential contracts"
         },
         {
           title: "Zama Bounty Program",
-          url: "https://bounty.zama.ai",
+          url: "https://www.zama.ai/programs/developer-program",
           description: "Earn rewards building FHEVM solutions"
         }
       ]

@@ -127,7 +127,7 @@ export const Navigation: React.FC<NavigationProps> = ({
       // Prevent confetti when navigating back to already-completed steps
       const isCompleted = isStepCompleted(stepId);
       if (!isCompleted) {
-        const confettiSteps = ['environment-setup', 'connect-wallet', 'fhe-basics', 'write-contract', 'contract-overview', 'testing-playground', 'private-voting'];
+        const confettiSteps = ['environment-setup', 'connect-wallet', 'fhe-basics', 'write-contract', 'contract-overview', 'deploy-test-counter', 'testing-playground', 'private-voting'];
         if (confettiSteps.includes(stepId)) {
           triggerConfetti();
         }

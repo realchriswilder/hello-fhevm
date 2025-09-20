@@ -149,7 +149,7 @@ export const EnvironmentSetupStep: React.FC = () => {
     {
       icon: BookOpen,
       title: "Bookmark the documentation",
-      description: "Keep the FHEVM docs open: docs.zama.ai/fhevm. It's your best reference for API details and examples."
+      description: "Keep the FHEVM docs open: docs.zama.ai. It's your best reference for API details and examples."
     }
   ];
 

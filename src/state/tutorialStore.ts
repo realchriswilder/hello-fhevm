@@ -88,7 +88,7 @@ export const useTutorialStore = create<TutorialState>()(
         const newProgress = { ...state.progress, [step]: true };
         
         // Show celebration modal for certain step completions
-        const celebrationSteps = ['environment-setup', 'connect-wallet', 'fhe-basics', 'write-contract', 'contract-overview', 'testing-playground', 'private-voting'];
+        const celebrationSteps = ['environment-setup', 'connect-wallet', 'fhe-basics', 'write-contract', 'contract-overview', 'deploy-test-counter', 'testing-playground', 'private-voting'];
         const shouldShowCelebration = celebrationSteps.includes(step);
         
         if (shouldShowCelebration) {
