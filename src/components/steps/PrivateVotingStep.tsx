@@ -461,7 +461,7 @@ const CONTRACT_ABI = SimpleVotingABI.abi;
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4">
-        <Badge variant="secondary"><Vote className="h-3 w-3" /> Step 7 of 8</Badge>
+        <Badge variant="secondary"><Vote className="h-3 w-3" /> Step 9 of 10</Badge>
         <h1 className="font-display text-3xl font-bold">Private Voting Demo</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
           Interact with a real FHEVM contract on Sepolia! Create sessions, cast encrypted votes, 
@@ -520,7 +520,7 @@ const CONTRACT_ABI = SimpleVotingABI.abi;
                   <DialogTitle>New Voting Session</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-3">
-                  <label className="text-sm">Describe the proposal</label>
+                  <label className="text-sm">Describe the voting topic</label>
                   <textarea className="w-full border rounded p-2 bg-background" rows={3} value={proposalText} onChange={(e) => setProposalText(e.target.value)} placeholder="e.g. Should we have pizza for lunch?" />
                   <div className="flex items-center gap-3">
                     <label className="text-sm">Duration (minutes)</label>

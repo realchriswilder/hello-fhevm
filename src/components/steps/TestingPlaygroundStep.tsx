@@ -456,7 +456,7 @@ export const TestingPlaygroundStep: React.FC = () => {
       >
         <Badge variant="secondary" className="gap-2">
           <TestTube className="h-3 w-3" />
-          Step 6 of 8
+          Step 8 of 10
         </Badge>
         <h1 className="font-display text-3xl font-bold">FHE Testing Playground</h1>
         <p className="text-muted-foreground max-w-3xl mx-auto">

@@ -302,7 +302,7 @@ export const EnvironmentSetupStep: React.FC = () => {
       >
         <Badge variant="secondary" className="gap-2">
           <Settings className="h-3 w-3" />
-          Step 2 of 8
+          Step 2 of 10
         </Badge>
         <h1 className="font-display text-3xl font-bold">Environment Setup</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -530,7 +530,7 @@ pnpm dev`}</code></pre>
                 <p className="text-xs text-muted-foreground">5) Open Step 3 to connect wallet and switch/add Sepolia.</p>
               </div>
               <div className="bg-muted rounded p-2">
-                <p className="text-xs text-muted-foreground">6) Use Step 6 to create a session, vote privately, request tally, and view results.</p>
+                <p className="text-xs text-muted-foreground">6) Use Step 9 to create a session, vote privately, request tally, and view results.</p>
               </div>
             </div>
           </CardContent>

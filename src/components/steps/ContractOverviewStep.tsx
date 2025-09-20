@@ -147,7 +147,7 @@ export const ContractOverviewStep: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4">
-        <Badge variant="secondary"><ScrollText className="h-3 w-3" /> Step 6 of 9</Badge>
+        <Badge variant="secondary"><ScrollText className="h-3 w-3" /> Step 6 of 10</Badge>
         <h1 className="font-display text-3xl font-bold">Voting Contract Overview</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
           In this section, we'll walk together through the entire <em>SimpleVoting</em> contract, line by line.

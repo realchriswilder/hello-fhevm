@@ -226,7 +226,7 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
       >
         <Badge variant="secondary" className="gap-2">
           <Shield className="h-3 w-3" />
-          Step 4 of 8
+          Step 4 of 10
         </Badge>
         <h1 className="font-display text-2xl font-bold">FHE Basics</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto text-sm">

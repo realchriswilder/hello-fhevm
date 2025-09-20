@@ -235,7 +235,7 @@ export const ConnectWalletStep: React.FC = () => {
       >
         <Badge variant="secondary" className="gap-2">
           <Wallet className="h-3 w-3" />
-          Step 3 of 8
+          Step 3 of 10
         </Badge>
         <h1 className="font-display text-3xl font-bold">Connect Your Wallet</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
