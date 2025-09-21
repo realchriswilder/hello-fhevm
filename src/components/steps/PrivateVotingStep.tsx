@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Vote, ThumbsUp, ThumbsDown, ArrowRight, Loader2 } from 'lucide-react';
+import { Vote, ThumbsUp, ThumbsDown, ArrowRight, Loader2, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTutorialStore } from '@/state/tutorialStore';
 // removed mock tutorial services
 import { useNavigate } from 'react-router-dom';
@@ -36,8 +36,17 @@ export const PrivateVotingStep: React.FC = () => {
   const resolvedRef = useRef<boolean>(false);
   const revealedLoggedRef = useRef<boolean>(false);
   const [showDecryptModes, setShowDecryptModes] = useState(false);
+  const [showStorageNote, setShowStorageNote] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const sessionsPerPage = 5;
 
   const SESSIONS_KEY = 'pv_cached_sessions_v1';
+
+  // Pagination logic
+  const totalPages = Math.ceil(cachedSessions.length / sessionsPerPage);
+  const startIndex = (currentPage - 1) * sessionsPerPage;
+  const endIndex = startIndex + sessionsPerPage;
+  const paginatedSessions = cachedSessions.slice(startIndex, endIndex);
 
   const loadCachedSessions = () => {
     try {
@@ -59,6 +68,11 @@ export const PrivateVotingStep: React.FC = () => {
     const sessions = loadCachedSessions();
     setCachedSessions(sessions);
   }, []);
+
+  // Reset to first page when sessions change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [cachedSessions.length]);
 
   // ticking clock for countdowns
   useEffect(() => {
@@ -627,6 +641,45 @@ const CONTRACT_ABI = SimpleVotingABI.abi;
               </div>
             </div>
 
+            {/* Browser Cache Storage Note - Collapsible */}
+            <div className="mt-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowStorageNote(!showStorageNote)}
+                className="w-full justify-between p-2 h-auto text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+              >
+                <div className="flex items-center gap-2">
+                  <Info className="h-4 w-4" />
+                  <span className="font-medium">💾 Data Storage Notice</span>
+                </div>
+                {showStorageNote ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
+              <AnimatePresence>
+                {showStorageNote && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <div className="text-xs text-blue-700 dark:text-blue-300">
+                        <p className="mb-2">
+                          Your voting sessions and results are currently stored in your browser's local cache for demonstration purposes. 
+                          This allows you to see your recent sessions and vote history.
+                        </p>
+                        <p>
+                          <strong>For production use:</strong> Consider integrating a backend service like Supabase or Firebase 
+                          to persist data across devices and provide a more robust user experience.
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {hasVoted && (
               <div className="text-center text-sm text-success">
                 ✅ Your encrypted vote has been submitted!
@@ -650,12 +703,19 @@ const CONTRACT_ABI = SimpleVotingABI.abi;
               )}
             </div>
 
-            {/* Cached sessions list */}
+            {/* Cached sessions list with pagination */}
             {cachedSessions.length > 0 && (
               <div className="space-y-2">
-                <div className="text-sm font-medium">Your recent sessions</div>
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-medium">Your recent sessions</div>
+                  {cachedSessions.length > sessionsPerPage && (
+                    <div className="text-xs text-muted-foreground">
+                      Page {currentPage} of {totalPages} ({cachedSessions.length} total)
+                    </div>
+                  )}
+                </div>
                 <div className="space-y-2">
-                  {cachedSessions.map((s) => {
+                  {paginatedSessions.map((s) => {
                     const end = parseInt(s.endTime || '0', 10);
                     const remaining = formatRemaining(end);
                     const ended = nowTs >= end;
@@ -685,6 +745,43 @@ const CONTRACT_ABI = SimpleVotingABI.abi;
                     );
                   })}
                 </div>
+                
+                {/* Pagination Controls */}
+                {cachedSessions.length > sessionsPerPage && (
+                  <div className="flex items-center justify-center gap-2 pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                      className="h-8 px-3"
+                    >
+                      Previous
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className="h-8 w-8 p-0"
+                        >
+                          {page}
+                        </Button>
+                      ))}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      disabled={currentPage === totalPages}
+                      className="h-8 px-3"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
