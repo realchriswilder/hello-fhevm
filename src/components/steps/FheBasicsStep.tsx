@@ -866,7 +866,7 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
                       <li>Operations on ciphertexts mirror operations on plaintexts ("homomorphic").</li>
                       <li>Great for voting, counters, private comparisons, risk scoring, more.</li>
                     </ul>
-                    <a className="underline text-xs" href="https://docs.zama.ai/fhevm" target="_blank" rel="noreferrer">Zama: FHEVM Docs</a>
+                    <a className="underline text-xs" href="https://docs.zama.ai/" target="_blank" rel="noreferrer">Zama: FHEVM Docs</a>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -884,7 +884,7 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
                       <li>Ops: <code>add</code>, <code>sub</code>, <code>mul</code>, comparisons, logical, bitwise, <code>select</code>.</li>
                       <li>Gatekeeping: <code>allowThis</code> marks which ciphertexts the contract can request to decrypt later.</li>
                     </ul>
-                    <a className="underline text-xs" href="https://docs.zama.ai/fhevm" target="_blank" rel="noreferrer">Zama: FHEVM Docs</a>
+                    <a className="underline text-xs" href="https://docs.zama.ai/protocol/solidity-guides/smart-contract/inputs" target="_blank" rel="noreferrer">Zama: FHEVM Docs</a>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -965,7 +965,7 @@ export async function decryptValue(encryptedBytes: string): Promise<number> {
                       Why this matters: the SDK handles WASM crypto, keys, and relayer coordination so your frontend can encrypt locally and request authorized decryptions of aggregates. Pair this with contract-side <code>requestDecryption</code> and <code>checkSignatures</code> to complete the loop.
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Reference: <a className="underline" href="https://docs.zama.ai/fhevm" target="_blank" rel="noreferrer">FHEVM Documentation</a>
+                      Reference: <a className="underline" href="https://docs.zama.ai/" target="_blank" rel="noreferrer">FHEVM Documentation</a>
                     </p>
                   </div>
                 </AccordionContent>

@@ -468,7 +468,7 @@ export const EnvironmentSetupStep: React.FC = () => {
               )}
             </div>
             <div className="text-[11px] text-muted-foreground">
-              Docs: <a className="underline" href="https://docs.zama.ai/fhevm" target="_blank" rel="noreferrer">FHEVM</a> · <a className="underline" href="https://docs.zama.ai/protocol/relayer-sdk-guides/fhevm-relayer/decryption" target="_blank" rel="noreferrer">Decryption & Callbacks</a>
+              Docs: <a className="underline" href="https://docs.zama.ai" target="_blank" rel="noreferrer">FHEVM</a> · <a className="underline" href="https://docs.zama.ai/protocol/relayer-sdk-guides/fhevm-relayer/decryption" target="_blank" rel="noreferrer">Decryption & Callbacks</a>
             </div>
           </CardContent>
         </Card>

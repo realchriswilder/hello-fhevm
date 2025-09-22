@@ -167,13 +167,13 @@ export const ContractOverviewStep: React.FC = () => {
             <div className="flex gap-2 flex-wrap">
               <Button size="sm" variant="outline" onClick={openSolidityFile}>Open SimpleVoting.sol</Button>
               <Button size="sm" variant="outline" asChild>
-                <a href="https://docs.zama.ai/fhevm" target="_blank" rel="noreferrer">Zama FHEVM Docs</a>
+                <a href="https://docs.zama.ai" target="_blank" rel="noreferrer">Zama FHEVM Docs</a>
               </Button>
               <Button size="sm" variant="outline" asChild>
                 <a href="https://docs.zama.ai/protocol/relayer-sdk-guides/fhevm-relayer/decryption" target="_blank" rel="noreferrer">Decryption & Callbacks</a>
               </Button>
               <Button size="sm" variant="outline" asChild>
-                <a href="https://docs.zama.ai/fhevm" target="_blank" rel="noreferrer">FHEVM Documentation</a>
+                <a href="https://docs.zama.ai/" target="_blank" rel="noreferrer">FHEVM Documentation</a>
               </Button>
             </div>
           </CardContent>
