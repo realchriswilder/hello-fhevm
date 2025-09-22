@@ -26,6 +26,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { wagmiConfig, chains } from '@/lib/wallet/wagmi';
 import { Confetti } from '@/components/ui/confetti';
 import { CelebrationModal } from '@/components/ui/celebration-modal';
+import { AudioPlayer } from '@/components/ui/audio-player';
 import { useTutorialStore } from '@/state/tutorialStore';
 
 const queryClient = new QueryClient();
@@ -121,6 +122,9 @@ const App = () => {
                 onClose={() => setSidebarOpen(false)} 
               />
             </div>
+            
+            {/* Audio Player */}
+            <AudioPlayer src="/fhevm.mp3" />
             
             {/* Sidebar Toggle - Fixed position */}
             <button
