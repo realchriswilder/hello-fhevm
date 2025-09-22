@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, Minimize2, Maximize2, Move } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Minimize2, Maximize2, Move, Gauge } from 'lucide-react';
 import { Button } from './button';
 
 interface AudioPlayerProps {
@@ -13,6 +13,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, className = '' })
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(1);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -109,6 +110,28 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, className = '' })
     audio.volume = newVolume;
     setVolume(newVolume);
     setIsMuted(newVolume === 0);
+  };
+
+  const handlePlaybackRateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const newRate = parseFloat(e.target.value);
+    audio.playbackRate = newRate;
+    setPlaybackRate(newRate);
+  };
+
+  const cyclePlaybackRate = () => {
+    const rates = [0.8, 0.9, 1.0, 1.1, 1.2];
+    const currentIndex = rates.indexOf(playbackRate);
+    const nextIndex = (currentIndex + 1) % rates.length;
+    const newRate = rates[nextIndex];
+    
+    const audio = audioRef.current;
+    if (audio) {
+      audio.playbackRate = newRate;
+    }
+    setPlaybackRate(newRate);
   };
 
   const formatTime = (time: number) => {
@@ -252,30 +275,50 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, className = '' })
                   )}
                 </Button>
                 
-                <div className="text-xs text-muted-foreground hidden sm:block">
-                  {formatTime(currentTime)} / {formatTime(duration)}
+                <div className="text-xs text-muted-foreground hidden sm:block flex items-center gap-1">
+                  <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+                  <span className="text-primary font-medium">{playbackRate}x</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 sm:gap-2">
-                <Volume2 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={isMuted ? 0 : volume}
-                  onChange={handleVolumeChange}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  className="w-12 sm:w-16 h-1 bg-muted rounded-lg appearance-none cursor-pointer slider"
-                />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <Volume2 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={isMuted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="w-12 sm:w-16 h-1 bg-muted rounded-lg appearance-none cursor-pointer slider"
+                  />
+                </div>
+                
+                <div className="flex items-center gap-1">
+                  <Gauge className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                  <select
+                    value={playbackRate}
+                    onChange={handlePlaybackRateChange}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="text-xs bg-background border border-border rounded px-1 py-0.5 cursor-pointer"
+                  >
+                    <option value={0.8}>0.8x</option>
+                    <option value={0.9}>0.9x</option>
+                    <option value={1.0}>1.0x</option>
+                    <option value={1.1}>1.1x</option>
+                    <option value={1.2}>1.2x</option>
+                  </select>
+                </div>
               </div>
             </div>
 
             {/* Mobile Time Display */}
             <div className="mt-2 text-center sm:hidden">
-              <div className="text-xs text-muted-foreground">
-                {formatTime(currentTime)} / {formatTime(duration)}
+              <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+                <span className="text-primary font-medium">{playbackRate}x</span>
               </div>
             </div>
 
@@ -329,9 +372,16 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, className = '' })
               </div>
             </div>
 
-            {/* Time Display */}
-            <div className="text-xs text-muted-foreground flex-shrink-0 min-w-0 mr-2">
-              {formatTime(currentTime)}
+            {/* Time Display and Speed */}
+            <div className="text-xs text-muted-foreground flex-shrink-0 min-w-0 mr-2 flex items-center gap-1">
+              <span>{formatTime(currentTime)}</span>
+              <button
+                onClick={cyclePlaybackRate}
+                className="text-primary font-medium hover:text-primary/80 transition-colors cursor-pointer"
+                title="Click to change speed"
+              >
+                {playbackRate}x
+              </button>
             </div>
 
             {/* Controls */}
