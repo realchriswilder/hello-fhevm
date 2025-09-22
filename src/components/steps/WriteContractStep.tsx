@@ -668,7 +668,7 @@ export const WriteContractStep: React.FC = () => {
               <div className="bg-muted p-4 rounded-lg font-mono text-sm">
                 <div className="text-green-600 dark:text-green-400">vote-app/</div>
                 <div className="ml-4">├── src/</div>
-                <div className="ml-8">├── fhe.ts          <span className="text-muted-foreground">// FHEVM setup & encryption</span></div>
+                <div className="ml-8">├── fhe.ts          <span className="text-muted-foreground">// Fhevmjs/relayer-sdk setup & encryption</span></div>
                 <div className="ml-8">├── service.ts       <span className="text-muted-foreground">// Contract interaction</span></div>
                 <div className="ml-8">├── contracts.ts     <span className="text-muted-foreground">// Contract ABI & address</span></div>
                 <div className="ml-8">├── main.tsx         <span className="text-muted-foreground">// App entry point</span></div>
