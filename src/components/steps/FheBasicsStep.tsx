@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +38,10 @@ import {
 import { useTutorialStore } from '@/state/tutorialStore';
 import { useNavigate } from 'react-router-dom';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import mermaid from 'mermaid';
 
 export const FheBasicsStep: React.FC = () => {
   const { setCurrentStep, completeStep } = useTutorialStore();
@@ -47,6 +51,190 @@ export const FheBasicsStep: React.FC = () => {
   const [showTechnicalView, setShowTechnicalView] = useState(false);
   const [showProofExplainer, setShowProofExplainer] = useState(false);
   const [showTypeTips, setShowTypeTips] = useState(false);
+  const [showFlowModal, setShowFlowModal] = useState(false);
+  const [isPreviewDark, setIsPreviewDark] = useState<boolean>(false);
+  const [showMermaidModal, setShowMermaidModal] = useState(false);
+  const [diagramDark, setDiagramDark] = useState<boolean>(false);
+  const mermaidContainerRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const isPanningRef = useRef(false);
+  const lastPosRef = useRef({ x: 0, y: 0 });
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const rootHasDark = document.documentElement.classList.contains('dark');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsPreviewDark(rootHasDark || prefersDark);
+    } catch (_) {
+      setIsPreviewDark(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const detectDark = (): boolean => {
+      try {
+        const classDark = document.documentElement.classList.contains('dark');
+        const mediaDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return classDark || mediaDark;
+      } catch {
+        return false;
+      }
+    };
+
+    const cssVar = (name: string): string => {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v ? `hsl(${v})` : '';
+    };
+
+    const initMermaidWithTheme = (isDark: boolean) => {
+      const text = cssVar('--foreground') || (isDark ? '#111827' : '#111827');
+      const mutedText = cssVar('--muted-foreground') || (isDark ? '#6b7280' : '#6b7280');
+      const mainBkg = cssVar('--card') || (isDark ? '#ffffff' : '#ffffff');
+      const border = cssVar('--border') || (isDark ? '#d1d5db' : '#d1d5db');
+
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'loose',
+        theme: 'base',
+        fontFamily: 'Inter, ui-sans-serif, system-ui',
+        themeVariables: {
+          background: 'transparent',
+          primaryColor: mainBkg,
+          secondaryColor: mainBkg,
+          tertiaryColor: mainBkg,
+          mainBkg,
+          primaryTextColor: text,
+          secondaryTextColor: text,
+          tertiaryTextColor: text,
+          textColor: text,
+          lineColor: border,
+          primaryBorderColor: border,
+          secondaryBorderColor: border,
+          tertiaryBorderColor: border,
+          edgeLabelBackground: mainBkg,
+          noteBkgColor: mainBkg,
+          noteTextColor: text,
+          // sequence-specific
+          actorBorder: border,
+          actorBkg: mainBkg,
+          signalColor: border,
+          signalTextColor: text,
+          labelBoxBkgColor: mainBkg,
+          labelBoxBorderColor: border,
+          activationBkgColor: mainBkg,
+          activationBorderColor: border,
+          sequenceNumberColor: mutedText
+        } as any
+      });
+    };
+
+    const applyTheme = (isDark: boolean) => {
+      setDiagramDark(isDark);
+      initMermaidWithTheme(isDark);
+      if (showMermaidModal) {
+        // Re-render if the modal is open
+        setTimeout(() => renderMermaid(), 0);
+      }
+    };
+
+    applyTheme(detectDark());
+
+    const media = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+    const mediaHandler = () => applyTheme(detectDark());
+    media?.addEventListener?.('change', mediaHandler);
+
+    const observer = new MutationObserver(() => applyTheme(detectDark()));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+    return () => {
+      media?.removeEventListener?.('change', mediaHandler);
+      observer.disconnect();
+    };
+  }, [showMermaidModal]);
+
+  const renderMermaid = () => {
+    const container = mermaidContainerRef.current;
+    if (!container) return;
+    const code = `sequenceDiagram\n    participant User as \"User\"\n    participant React as \"React Frontend\"\n    participant SDK as \"@httpz/sdk\"\n    participant Contract as \"Smart Contract\"\n    participant Gateway as \"Gateway Service\"\n    participant KMS as \"Key Management System\"\n    participant Coprocessor as \"FHE Coprocessor\"\n    participant Oracle as \"Decryption Oracle\"\n\n    Note over User, Oracle: Input Encryption & Submission Phase\n    User->>React: \"Input sensitive data\"\n    React->>SDK: \"createEncryptedInput(contractAddr, userAddr)\"\n    SDK->>SDK: \"input.add64(value), input.addBool(flag)\"\n    SDK->>SDK: \"input.encrypt() - Generate ciphertext + ZKPoK\"\n    React->>Contract: \"Call function with encrypted inputs + proof\"\n    Contract->>Contract: \"FHE.asEuint64(input, proof) - Validate & convert\"\n    Note over Contract, Coprocessor: FHE Computation Phase\n    Contract->>Coprocessor: \"Symbolic execution - FHE operations\"\n    Coprocessor->>Coprocessor: \"Execute encrypted computations using evaluation key\"\n    Coprocessor->>Contract: \"Return encrypted results (handles)\"\n    Contract->>Contract: \"Store encrypted results\"\n    Note over Contract, Oracle: Decryption Request Phase\n    Contract->>Gateway: \"Gateway.requestDecryption(handles, callback, params)\"\n    Gateway->>Oracle: \"requestDecryption(requestID, handles, callbackSelector)\"\n    Oracle->>Oracle: \"Emit EventDecryption\"\n    Note over Oracle, KMS: KMS Decryption Phase\n    Oracle->>Gateway: \"Relayer detects event\"\n    Gateway->>KMS: \"Request decryption of ciphertext handles\"\n    KMS->>KMS: \"Decrypt using private FHE key\"\n    KMS->>Gateway: \"Return decrypted plaintext + signatures\"\n    Note over Gateway, Contract: Oracle Callback Phase\n    Gateway->>Contract: \"Call callback function with decrypted results\"\n    Contract->>Contract: \"Process plaintext results in callback\"\n    Contract->>Contract: \"Update contract state with decrypted values\"\n    Note over React, SDK: Frontend Data Retrieval Phase\n    React->>Contract: \"Call view function to get results\"\n    Contract->>React: \"Return processed results\"\n    React->>User: \"Display decrypted/processed data\"\n    Note over User, Oracle: Alternative: Re-encryption for Private Access\n    React->>SDK: \"generateKeypair() for user\"\n    React->>SDK: \"createEIP712(publicKey, contractAddr)\"\n    User->>React: \"Sign EIP712 message\"\n    React->>Contract: \"Get encrypted balance handle\"\n    React->>SDK: \"reencrypt(handle, privateKey, publicKey, signature)\"\n    SDK->>Gateway: \"Request re-encryption\"\n    Gateway->>KMS: \"Re-encrypt with user's public key\"\n    KMS->>Gateway: \"Return re-encrypted data\"\n    Gateway->>SDK: \"Return re-encrypted ciphertext\"\n    SDK->>SDK: \"Decrypt with user's private key\"\n    SDK->>React: \"Return plaintext for user only\"\n    React->>User: \"Display private data\"`;
+    const id = 'fhe-advanced-seq';
+    // Re-apply theme variables before rendering to ensure contrast (especially in light mode)
+    const cssVar = (name: string): string => {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v ? `hsl(${v})` : '';
+    };
+    const mainBkg = cssVar('--card') || '#ffffff';
+    const text = cssVar('--foreground') || '#111827';
+    const border = cssVar('--border') || '#d1d5db';
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'loose',
+      theme: 'base',
+      fontFamily: 'Inter, ui-sans-serif, system-ui',
+      themeVariables: {
+        background: 'transparent',
+        mainBkg,
+        primaryColor: mainBkg,
+        secondaryColor: mainBkg,
+        tertiaryColor: mainBkg,
+        primaryTextColor: text,
+        lineColor: border,
+        primaryBorderColor: border,
+        secondaryBorderColor: border,
+        tertiaryBorderColor: border
+      } as any
+    });
+    requestAnimationFrame(() => {
+      mermaid.render(id, code).then(({ svg }) => {
+        container.innerHTML = svg;
+      }).catch((err) => {
+        console.error('Mermaid render error', err);
+        container.innerHTML = '<div class="text-xs text-destructive p-2">Failed to render diagram.</div>';
+      });
+    });
+  };
+
+  useEffect(() => {
+    if (!showMermaidModal) return;
+    renderMermaid();
+  }, [showMermaidModal, diagramDark]);
+
+  const onWheelZoom = (e: React.WheelEvent) => {
+    // Avoid calling preventDefault to stop the passive-listener warning.
+    const delta = -e.deltaY;
+    const factor = delta > 0 ? 1.1 : 0.9;
+    setZoom((z) => Math.min(3, Math.max(0.4, z * factor)));
+  };
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    isPanningRef.current = true;
+    lastPosRef.current = { x: e.clientX, y: e.clientY };
+  };
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isPanningRef.current) return;
+    const dx = e.clientX - lastPosRef.current.x;
+    const dy = e.clientY - lastPosRef.current.y;
+    lastPosRef.current = { x: e.clientX, y: e.clientY };
+    setPan((p) => ({ x: p.x + dx, y: p.y + dy }));
+  };
+  const onMouseUpLeave = () => { isPanningRef.current = false; };
+
+  useEffect(() => {
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    const el = wrapperRef.current as any;
+    if (!document.fullscreenElement) {
+      if (el?.requestFullscreen) el.requestFullscreen();
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  };
 
   const copyToClipboard = async (text: string, id: string) => {
     try {
@@ -242,9 +430,19 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
       >
         <Card className="tutorial-step">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Workflow className="h-4 w-4 text-primary" /> Encryption → Computation → Decryption (Simple Voting)
-            </CardTitle>
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Workflow className="h-4 w-4 text-primary" /> Encryption → Computation → Decryption (Simple Voting)
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <Button size="sm" className="shrink-0" onClick={() => setShowFlowModal(true)}>
+                View advanced flow 
+                </Button>
+                <Button size="sm" variant="outline" className="shrink-0" onClick={() => setShowMermaidModal(true)}>
+                  Detailed view
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="p-4">
             <div className="w-full overflow-x-auto">
@@ -303,6 +501,64 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* Advanced flow modal (image preview) */}
+      <Dialog open={showFlowModal} onOpenChange={setShowFlowModal}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Advanced end-to-end flow</DialogTitle>
+            <DialogDescription>
+              This diagram mirrors the architecture from the screenshots. Toggle the theme to view the light/dark variants.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center justify-end gap-2 pb-2">
+            <Label htmlFor="adv-flow-theme" className="text-xs">Dark image</Label>
+            <Switch id="adv-flow-theme" checked={isPreviewDark} onCheckedChange={setIsPreviewDark} />
+          </div>
+          <div className="rounded-md overflow-hidden border">
+            <img
+              src={isPreviewDark ? '/bmode.png' : '/wmod.png'}
+              alt={isPreviewDark ? 'Advanced flow (dark)' : 'Advanced flow (light)'}
+              className="w-full h-auto block"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Mermaid detailed modal */}
+      <Dialog open={showMermaidModal} onOpenChange={(v) => { setShowMermaidModal(v); if (!v) { setZoom(1); setPan({ x: 0, y: 0 }); } }}>
+        <DialogContent className="max-w-6xl">
+          <DialogHeader>
+            <DialogTitle>Detailed sequence flow</DialogTitle>
+            <DialogDescription>Zoom with mouse wheel, drag to pan. Double‑click diagram to toggle fullscreen.</DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center justify-end gap-2 pb-2">
+            <span className="text-xs text-muted-foreground">Theme follows app</span>
+            <Button size="sm" variant="outline" onClick={toggleFullscreen}>
+              {isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); renderMermaid(); }}>
+              Reset view
+            </Button>
+          </div>
+          <div
+            ref={wrapperRef}
+            className={`relative w-full ${isFullscreen ? 'h-[100svh]' : 'h-[78vh]'} bg-muted rounded-md overflow-hidden border`}
+            onWheel={onWheelZoom}
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}
+            onMouseUp={onMouseUpLeave}
+            onMouseLeave={onMouseUpLeave}
+            onDoubleClick={toggleFullscreen}
+          >
+            <div
+              ref={mermaidContainerRef}
+              style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: '0 0' }}
+              className="min-w-[900px] min-h-[600px]"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Proof Explainer & Type Sizing Tips (additive) */}
       <motion.div
