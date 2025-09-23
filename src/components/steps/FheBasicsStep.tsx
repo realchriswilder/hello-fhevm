@@ -456,27 +456,27 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
 
                 {/* Row 1: Frontend, Relayer, Contract */}
                 <rect x="20" y="60" rx="8" ry="8" width="180" height="44" className="node" />
-                <text x="110" y="86" textAnchor="middle" className="label">React Frontend</text>
+                <text x="110" y="82" textAnchor="middle" dominantBaseline="middle" className="label">React Frontend</text>
 
                 <rect x="240" y="60" rx="8" ry="8" width="180" height="44" className="node" />
-                <text x="330" y="86" textAnchor="middle" className="label">Zama FHE Client</text>
+                <text x="330" y="82" textAnchor="middle" dominantBaseline="middle" className="label">Zama FHE Client</text>
 
                 <rect x="460" y="60" rx="8" ry="8" width="220" height="44" className="node" />
-                <text x="570" y="86" textAnchor="middle" className="label">SimpleVoting (Contract)</text>
+                <text x="570" y="82" textAnchor="middle" dominantBaseline="middle" className="label">SimpleVoting (Contract)</text>
 
                 {/* Row 2: Oracle/KMS and User/Public Decrypt */}
                 <rect x="500" y="210" rx="8" ry="8" width="200" height="44" className="node" />
-                <text x="600" y="236" textAnchor="middle" className="label">Gateway · KMS · Oracle</text>
+                <text x="600" y="232" textAnchor="middle" dominantBaseline="middle" className="label">Gateway · KMS · Oracle</text>
 
                 <rect x="760" y="60" rx="8" ry="8" width="240" height="44" className="node" />
-                <text x="880" y="86" textAnchor="middle" className="label">User Decrypt / Public Reveal</text>
+                <text x="880" y="82" textAnchor="middle" dominantBaseline="middle" className="label">User Decrypt / Public Reveal</text>
 
                 {/* Arrows: encryption */}
                 <path d="M200,82 L240,82" stroke="currentColor" fill="none" markerEnd="url(#arrow)" />
-                <text x="220" y="66" className="label">encrypt vote</text>
+                <text x="220" y="58" className="label">encrypt vote</text>
 
                 <path d="M420,82 L460,82" stroke="currentColor" fill="none" markerEnd="url(#arrow)" />
-                <text x="440" y="66" className="label">enc vote + proof</text>
+                <text x="440" y="58" className="label">enc vote + proof</text>
 
                 {/* Computation in contract */}
                 <text x="570" y="130" textAnchor="middle" className="label">FHE.fromExternal → FHE.add/select</text>
@@ -491,7 +491,7 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
 
                 {/* Public reveal to frontend */}
                 <path d="M680,82 L760,82" stroke="currentColor" fill="none" markerEnd="url(#arrow)" />
-                <text x="720" y="66" className="label">revealed tallies</text>
+                <text x="720" y="58" className="label">revealed tallies</text>
 
                 {/* Private user decrypt path (hinted, non-overlapping) */}
                 <path d="M880,100 C880,150 760,170 700,170" stroke="currentColor" fill="none" strokeDasharray="4 4" />
