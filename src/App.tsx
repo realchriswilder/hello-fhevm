@@ -28,6 +28,7 @@ import { Confetti } from '@/components/ui/confetti';
 import { CelebrationModal } from '@/components/ui/celebration-modal';
 import { AudioPlayer } from '@/components/ui/audio-player';
 import { VideoPlayer } from '@/components/ui/video-player';
+import { WelcomeModal } from '@/components/ui/welcome-modal';
 import { useTutorialStore } from '@/state/tutorialStore';
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [navOpen, setNavOpen] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
   const { 
     confettiTrigger, 
     triggerConfetti, 
@@ -143,6 +145,16 @@ const App = () => {
               <span role="img" aria-label="book">📖</span>
               <span className="hidden sm:inline text-sm font-medium">Click here</span>
             </button>
+            
+            {/* Welcome Modal */}
+            <WelcomeModal
+              isOpen={showWelcomeModal}
+              onClose={() => setShowWelcomeModal(false)}
+              onEnterTutorial={() => setShowWelcomeModal(false)}
+              audioSrc="/fhevm.mp3"
+              videoId="ovnzGy2zR6k"
+              videoTitle="FHEVM Tutorial Complete Guide"
+            />
             
             {/* Confetti Component */}
             <Confetti 
