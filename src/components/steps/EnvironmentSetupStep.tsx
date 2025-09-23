@@ -493,7 +493,7 @@ export const EnvironmentSetupStep: React.FC = () => {
                 <div className="bg-muted rounded p-2 -mx-1 sm:mx-0">
                   <p className="text-xs font-semibold mb-1">0) Clone this repository</p>
                   <pre className="text-xs whitespace-pre-wrap break-words"><code>{`git clone https://github.com/realchriswilder/hello-fhevm.git
-cd vote-app`}</code></pre>
+cd hello-fhevm`}</code></pre>
                 </div>
                 <div className="bg-muted rounded p-2">
                   <p className="text-xs font-semibold mb-1">1) Install & setup</p>

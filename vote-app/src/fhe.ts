@@ -28,7 +28,7 @@ export async function encryptYesNo(choice: 'yes' | 'no', contractAddress: string
   // encode Yes as 1 and No as 0 (euint64)
   const value = choice === 'yes' ? 1 : 0;
   const encryptedInput = fhe.createEncryptedInput(contractAddress, userAddress);
-  const result = await encryptedInput.add64(value).encrypt();
+  const result = await encryptedInput.add8(value).encrypt();
   const bytes = result.handles[0] as Uint8Array;
   const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
   const handle = `0x${hex}`;
