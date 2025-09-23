@@ -51,12 +51,6 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Runtime font URL injection -->
-    <script>
-      // Bridge environment variable to CSS custom property
-      if (import.meta && import.meta.env && import.meta.env.VITE_COMICY_FONT_URL) {
-        document.documentElement.style.setProperty('--vite-comicy-font-url', `url("${import.meta.env.VITE_COMICY_FONT_URL}")`);
-      }
-    </script>
+  <!-- Removed runtime font URL injection (no longer used) -->
   </body>
 </html>

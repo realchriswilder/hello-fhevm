@@ -394,7 +394,7 @@ const ReviewStep: React.FC = () => {
         </p>
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <span>Built with</span>
-          <span className="text-primary font-semibold">FHEVM</span>
+          <span className="text-primary font-semibold">privacy</span>
           <span>by</span>
           <a
             href="https://x.com/realchriswilder"
@@ -402,7 +402,7 @@ const ReviewStep: React.FC = () => {
             rel="noopener noreferrer"
             className="text-primary font-semibold underline"
           >
-            Chris Wilder
+            ChrisWilder
           </a>
         </div>
       </motion.div>

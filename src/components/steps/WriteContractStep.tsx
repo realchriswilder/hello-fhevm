@@ -348,8 +348,8 @@ export const WriteContractStep: React.FC = () => {
                     <CopyButton text={FHECounterContract} id="fhe-contract" />
                   </div>
                   
-                  <ScrollArea className="h-96 border rounded-lg">
-                    <div className="p-4 font-mono text-sm">
+                  <ScrollArea className="h-96 border rounded-lg overflow-x-auto">
+                    <div className="p-4 font-mono text-sm min-w-[920px]">
                       {FHECounterContract.split('\n').map((line, index) => {
                         const explanation = contractExplanations.find(exp => exp.line === index + 1);
                         return (
@@ -364,7 +364,7 @@ export const WriteContractStep: React.FC = () => {
                               <span className="text-muted-foreground w-8 text-right select-none flex-shrink-0">
                                 {index + 1}
                               </span>
-                              <code className="flex-1 break-words">{line}</code>
+                              <code className="flex-1 whitespace-pre">{line}</code>
                             </div>
                             {explanation && showExplanations && (
                               <div className="ml-6 lg:ml-4 p-2 bg-muted dark:bg-muted/50 rounded text-xs max-w-full lg:max-w-xs">
@@ -386,14 +386,14 @@ export const WriteContractStep: React.FC = () => {
                     <CopyButton text={RegularCounterContract} id="regular-contract" />
                   </div>
                   
-                  <ScrollArea className="h-96 border rounded-lg">
-                    <div className="p-4 font-mono text-sm">
+                  <ScrollArea className="h-96 border rounded-lg overflow-x-auto">
+                    <div className="p-4 font-mono text-sm min-w-[920px]">
                       {RegularCounterContract.split('\n').map((line, index) => (
                         <div key={index} className="flex items-start gap-2 lg:gap-4 py-1">
                           <span className="text-muted-foreground w-8 text-right select-none flex-shrink-0">
                             {index + 1}
                           </span>
-                          <code className="flex-1 break-words">{line}</code>
+                          <code className="flex-1 whitespace-pre">{line}</code>
                         </div>
                       ))}
                     </div>
@@ -565,7 +565,7 @@ export const WriteContractStep: React.FC = () => {
         {/* Step 3: FHE Integration */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
               <Code className="h-5 w-5 text-purple-500" />
               Step 3: FHE Setup
             </CardTitle>
@@ -579,7 +579,7 @@ export const WriteContractStep: React.FC = () => {
                 Set up the FHEVM Relayer SDK to handle encryption and WASM loading.
               </p>
               <div className="bg-muted dark:bg-muted/50 p-3 rounded-lg border border-border">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
                   <div className="font-mono text-xs text-foreground">
                     <div>🔐 src/fhe.ts - Encrypt user votes</div>
                   </div>
@@ -587,14 +587,14 @@ export const WriteContractStep: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowExplanations(!showExplanations)}
-                    className="h-6 px-2 text-xs hover:bg-muted-foreground/10 dark:hover:bg-muted-foreground/20"
+                    className="h-6 px-2 text-xs hover:bg-muted-foreground/10 dark:hover:bg-muted-foreground/20 w-full sm:w-auto"
                   >
                     {showExplanations ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                     <span className="ml-1">{showExplanations ? 'Hide' : 'Show'} Code</span>
                   </Button>
                 </div>
                 {showExplanations && (
-                  <pre className="text-xs font-mono leading-relaxed whitespace-pre-wrap bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3 rounded border border-gray-300 dark:border-gray-600">
+                  <pre className="text-[11px] sm:text-xs font-mono leading-relaxed whitespace-pre-wrap break-words overflow-x-auto -mx-1 sm:mx-0 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3 rounded border border-gray-300 dark:border-gray-600">
 {`export async function encryptYesNo(choice: 'yes' | 'no', contractAddress: string, userAddress: string): Promise<string> {
   const fhe = await initializeFheInstance();
   // encode Yes as 1 and No as 0 (euint64)
@@ -780,7 +780,7 @@ export const WriteContractStep: React.FC = () => {
               <Button
                 onClick={handleContinue}
                 size="lg"
-                className="gap-2"
+                className="gap-2 w-full sm:w-auto"
               >
                 Continue to Contract Overview
                 <ArrowRight className="h-4 w-4" />
