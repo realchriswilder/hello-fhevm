@@ -23,10 +23,11 @@ import { RainbowKitProvider, ConnectButton } from '@rainbow-me/rainbowkit';
 import { WagmiConfig, useAccount, useChainId } from 'wagmi';
 import { useDisconnect, useSwitchChain } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { wagmiConfig, chains } from '@/lib/wallet/wagmi';
+import { wagmiConfig } from '@/lib/wallet/wagmi';
 import { Confetti } from '@/components/ui/confetti';
 import { CelebrationModal } from '@/components/ui/celebration-modal';
 import { AudioPlayer } from '@/components/ui/audio-player';
+import { VideoPlayer } from '@/components/ui/video-player';
 import { useTutorialStore } from '@/state/tutorialStore';
 
 const queryClient = new QueryClient();
@@ -88,7 +89,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <WagmiConfig config={wagmiConfig}>
-          <RainbowKitProvider chains={chains}>
+          <RainbowKitProvider>
             <BrowserRouter>
           <div className="min-h-screen bg-background">
             <AppBarWithWallet />
@@ -125,6 +126,12 @@ const App = () => {
             
             {/* Audio Player */}
             <AudioPlayer src="/fhevm.mp3" />
+            
+            {/* Video Player */}
+            <VideoPlayer 
+              videoId="ovnzGy2zR6k" 
+              title="FHEVM Tutorial Complete Guide"
+            />
             
             {/* Sidebar Toggle - Fixed position */}
             <button
