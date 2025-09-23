@@ -293,7 +293,7 @@ export const EnvironmentSetupStep: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-0">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -304,8 +304,8 @@ export const EnvironmentSetupStep: React.FC = () => {
           <Settings className="h-3 w-3" />
           Step 2 of 10
         </Badge>
-        <h1 className="font-display text-3xl font-bold">Environment Setup</h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold">Environment Setup</h1>
+        <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
           Let's prepare your development environment for building confidential applications. 
           We'll check your system and install the necessary tools.
         </p>
@@ -318,7 +318,7 @@ export const EnvironmentSetupStep: React.FC = () => {
         transition={{ delay: 0.2 }}
         className="space-y-2"
       >
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between text-xs sm:text-sm">
           <span>Setup Progress</span>
           <span>{Math.round(progress)}% Complete</span>
         </div>
@@ -351,7 +351,7 @@ export const EnvironmentSetupStep: React.FC = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 + index * 0.1 }}
-                className="flex items-center gap-3 p-2 rounded-lg border"
+                className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-2 rounded-lg border"
               >
                 <StatusIcon status={check.status} />
                 <div className="flex-1">
@@ -372,6 +372,7 @@ export const EnvironmentSetupStep: React.FC = () => {
                   <Button
                     variant="ghost"
                     size="sm"
+                    className="mt-2 sm:mt-0 self-end sm:self-auto"
                     onClick={() => copyToClipboard(check.command!)}
                   >
                     {copiedCommand === check.command ? (
@@ -395,11 +396,11 @@ export const EnvironmentSetupStep: React.FC = () => {
         className="space-y-6"
       >
         <h2 className="font-display text-xl font-semibold">Installation Guide</h2>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {commands.map((cmd, index) => (
             <Card key={index} className="tutorial-step">
               <CardHeader>
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                   <div className="space-y-1">
                     <CardTitle className="text-lg flex items-center gap-2">
                       <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-sm flex items-center justify-center">
@@ -410,7 +411,7 @@ export const EnvironmentSetupStep: React.FC = () => {
                     <p className="text-sm text-muted-foreground">{cmd.description}</p>
                   </div>
                   {cmd.url && (
-                    <Button variant="outline" size="sm" asChild>
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto mt-2 sm:mt-0 sm:ml-auto" asChild>
                       <a href={cmd.url} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-4 w-4" />
                       </a>
@@ -420,9 +421,9 @@ export const EnvironmentSetupStep: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <div className="code-block">
-                    <pre className="text-sm overflow-x-auto">
-                      <code>{cmd.command}</code>
+                  <div className="code-block -mx-1 sm:-mx-2">
+                    <pre className="text-xs sm:text-sm whitespace-pre-wrap break-words p-3">
+                      <code className="block">{cmd.command}</code>
                     </pre>
                   </div>
                   <Button
@@ -458,11 +459,11 @@ export const EnvironmentSetupStep: React.FC = () => {
           <CardContent className="space-y-2">
             <p className="text-xs text-muted-foreground">Verify your stack uses the core Zama primitives we’ll rely on.</p>
             <div className="flex items-center gap-2">
-              <Button size="sm" onClick={handleCompatCheck} className="gap-2">
+              <Button size="sm" onClick={handleCompatCheck} className="gap-2 w-full sm:w-auto">
                 <Shield className="h-3 w-3" /> Run Check
               </Button>
               {compatCheck && (
-                <span className={`text-xs ${compatCheck.ok ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`text-[11px] sm:text-xs break-words ${compatCheck.ok ? 'text-green-600' : 'text-red-600'}`}>
                   {compatCheck.message}
                 </span>
               )}
@@ -487,16 +488,16 @@ export const EnvironmentSetupStep: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <div className="grid md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="space-y-2">
-                <div className="bg-muted rounded p-2">
+                <div className="bg-muted rounded p-2 -mx-1 sm:mx-0">
                   <p className="text-xs font-semibold mb-1">0) Clone this repository</p>
-                  <pre className="text-xs overflow-x-auto"><code>{`git clone https://github.com/realchriswilder/hello-fhevm.git
+                  <pre className="text-xs whitespace-pre-wrap break-words"><code>{`git clone https://github.com/realchriswilder/hello-fhevm.git
 cd vote-app`}</code></pre>
                 </div>
                 <div className="bg-muted rounded p-2">
                   <p className="text-xs font-semibold mb-1">1) Install & setup</p>
-                  <pre className="text-xs overflow-x-auto"><code>{`# Node 18+ and pnpm
+                  <pre className="text-xs whitespace-pre-wrap break-words"><code>{`# Node 18+ and pnpm
 npm i -g pnpm
 
 # From project root
@@ -505,32 +506,32 @@ cp .env.example .env`}</code></pre>
                 </div>
                 <div className="bg-muted rounded p-2">
                   <p className="text-xs font-semibold mb-1">2) Configure env</p>
-                  <ul className="list-disc pl-4 text-xs text-muted-foreground space-y-1">
+                  <ul className="list-disc pl-4 text-xs text-muted-foreground space-y-1 break-words">
                     <li>Frontend: set VITE_VOTING_CONTRACT_ADDRESS in .env</li>
                     <li>Contracts: set PRIVATE_KEY, INFURA_API_KEY, ETHERSCAN_API_KEY in vote-app/.env</li>
                   </ul>
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="bg-muted rounded p-2">
+                <div className="bg-muted rounded p-2 -mx-1 sm:mx-0">
                   <p className="text-xs font-semibold mb-1">3) Compile & deploy (Sepolia)</p>
-                  <pre className="text-xs overflow-x-auto"><code>{`cd vote-app
+                  <pre className="text-xs whitespace-pre-wrap break-words"><code>{`cd vote-app
 npx hardhat compile
 npx hardhat run scripts/deploy.cjs --network sepolia`}</code></pre>
                 </div>
-                <div className="bg-muted rounded p-2">
+                <div className="bg-muted rounded p-2 -mx-1 sm:mx-0">
                   <p className="text-xs font-semibold mb-1">4) Run app</p>
-                  <pre className="text-xs overflow-x-auto"><code>{`cd ..
+                  <pre className="text-xs whitespace-pre-wrap break-words"><code>{`cd ..
 pnpm dev`}</code></pre>
                 </div>
               </div>
             </div>
-            <div className="grid md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="bg-muted rounded p-2">
-                <p className="text-xs text-muted-foreground">5) Open Step 3 to connect wallet and switch/add Sepolia.</p>
+                <p className="text-xs text-muted-foreground break-words">5) Open Step 3 to connect wallet and switch/add Sepolia.</p>
               </div>
               <div className="bg-muted rounded p-2">
-                <p className="text-xs text-muted-foreground">6) Use Step 9 to create a session, vote privately, request tally, and view results.</p>
+                <p className="text-xs text-muted-foreground break-words">6) Use Step 9 to create a session, vote privately, request tally, and view results.</p>
               </div>
             </div>
           </CardContent>
@@ -586,6 +587,7 @@ pnpm dev`}</code></pre>
           <Button
             variant="outline"
             size="sm"
+            className="w-full sm:w-auto"
             onClick={() => setShowTroubleshooting(!showTroubleshooting)}
           >
             {showTroubleshooting ? 'Hide' : 'Show'} Troubleshooting
@@ -677,7 +679,7 @@ pnpm dev`}</code></pre>
               </AlertDescription>
             </Alert>
             
-            <Button onClick={handleContinue} size="lg" className="gap-2">
+            <Button onClick={handleContinue} size="lg" className="gap-2 w-full sm:w-auto">
               Continue to Wallet Setup
               <ArrowRight className="h-4 w-4" />
             </Button>

@@ -62,6 +62,8 @@ export const FheBasicsStep: React.FC = () => {
   const isPanningRef = useRef(false);
   const lastPosRef = useRef({ x: 0, y: 0 });
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const pinchStartDistRef = useRef<number | null>(null);
+  const pinchStartZoomRef = useRef<number>(1);
 
   useEffect(() => {
     try {
@@ -220,6 +222,48 @@ export const FheBasicsStep: React.FC = () => {
     setPan((p) => ({ x: p.x + dx, y: p.y + dy }));
   };
   const onMouseUpLeave = () => { isPanningRef.current = false; };
+
+  const getTouchDistance = (touches: React.TouchList): number => {
+    if (touches.length < 2) return 0;
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.hypot(dx, dy);
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      pinchStartDistRef.current = getTouchDistance(e.touches);
+      pinchStartZoomRef.current = zoom;
+    } else if (e.touches.length === 1) {
+      isPanningRef.current = true;
+      lastPosRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && pinchStartDistRef.current) {
+      const current = getTouchDistance(e.touches);
+      if (current > 0) {
+        const scale = current / pinchStartDistRef.current;
+        const nextZoom = Math.min(3, Math.max(0.4, pinchStartZoomRef.current * scale));
+        setZoom(nextZoom);
+      }
+    } else if (e.touches.length === 1 && isPanningRef.current) {
+      const dx = e.touches[0].clientX - lastPosRef.current.x;
+      const dy = e.touches[0].clientY - lastPosRef.current.y;
+      lastPosRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      setPan((p) => ({ x: p.x + dx, y: p.y + dy }));
+    }
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) {
+      pinchStartDistRef.current = null;
+    }
+    if (e.touches.length === 0) {
+      isPanningRef.current = false;
+    }
+  };
 
   useEffect(() => {
     const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
@@ -430,15 +474,15 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
       >
         <Card className="tutorial-step">
           <CardHeader className="pb-2">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Workflow className="h-4 w-4 text-primary" /> Encryption → Computation → Decryption (Simple Voting)
               </CardTitle>
-              <div className="flex items-center gap-2">
-                <Button size="sm" className="shrink-0" onClick={() => setShowFlowModal(true)}>
-                View advanced flow 
+              <div className="flex w-full sm:w-auto flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <Button size="sm" className="shrink-0 w-full sm:w-auto" onClick={() => setShowFlowModal(true)}>
+                  View advanced flow 
                 </Button>
-                <Button size="sm" variant="outline" className="shrink-0" onClick={() => setShowMermaidModal(true)}>
+                <Button size="sm" variant="outline" className="shrink-0 w-full sm:w-auto" onClick={() => setShowMermaidModal(true)}>
                   Detailed view
                 </Button>
               </div>
@@ -543,18 +587,21 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
           </div>
           <div
             ref={wrapperRef}
-            className={`relative w-full ${isFullscreen ? 'h-[100svh]' : 'h-[78vh]'} bg-muted rounded-md overflow-hidden border`}
+            className={`relative w-full ${isFullscreen ? 'h-[100svh]' : 'h-[78vh]'} bg-muted rounded-md overflow-auto border ${isPanningRef.current ? 'cursor-grabbing' : 'cursor-grab'}`}
             onWheel={onWheelZoom}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUpLeave}
             onMouseLeave={onMouseUpLeave}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
             onDoubleClick={toggleFullscreen}
           >
             <div
               ref={mermaidContainerRef}
               style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: '0 0' }}
-              className="min-w-[900px] min-h-[600px]"
+              className="min-w-[1100px] min-h-[700px]"
             />
           </div>
         </DialogContent>
@@ -625,9 +672,9 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
         transition={{ delay: 0.2 }}
         className="space-y-4"
       >
-        <div className="text-center">
-          <h2 className="text-xl font-bold mb-2">Understanding FHE & Zama Protocol</h2>
-          <p className="text-muted-foreground text-sm">8 key concepts you'll master in this tutorial</p>
+        <div className="text-center px-4 sm:px-0">
+          <h2 className="text-lg sm:text-xl font-bold mb-2">Understanding FHE & Zama Protocol</h2>
+          <p className="text-muted-foreground text-xs sm:text-sm">8 key concepts you'll master in this tutorial</p>
         </div>
 
         {/* Slide Container */}
@@ -642,7 +689,7 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
             >
               <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 shadow-lg">
                 <CardContent className="p-4">
-                  <div className="flex items-start space-x-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-start sm:space-x-3 space-y-3 sm:space-y-0">
                     {/* Icon */}
                     <div className="flex-shrink-0">
                       <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center shadow-md">
@@ -655,17 +702,17 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
                     {/* Content */}
                     <div className="flex-1 space-y-3">
                       <div>
-                        <h3 className="text-lg font-bold mb-2">
+                        <h3 className="text-base sm:text-lg font-bold mb-2">
                           {fheSlides[currentSlide].title}
                         </h3>
                         
                         {/* Technical/Layman Toggle */}
-                        <div className="flex items-center gap-2 mb-3">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-3">
                           <Button
                             variant={!showTechnicalView ? "default" : "outline"}
                             size="sm"
                             onClick={() => setShowTechnicalView(false)}
-                            className="text-xs"
+                            className="text-xs w-full sm:w-auto"
                           >
                             <Brain className="w-3 h-3 mr-1" />
                             Layman's View
@@ -674,7 +721,7 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
                             variant={showTechnicalView ? "default" : "outline"}
                             size="sm"
                             onClick={() => setShowTechnicalView(true)}
-                            className="text-xs"
+                            className="text-xs w-full sm:w-auto"
                           >
                             <Code2 className="w-3 h-3 mr-1" />
                             Technical View
@@ -703,7 +750,7 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
                           {fheSlides[currentSlide].code && (
                             <div className="relative">
                               <div className="bg-muted rounded-lg p-3">
-                                <pre className="text-xs overflow-x-auto">
+                                <pre className="text-xs whitespace-pre-wrap break-words">
                                   <code>{fheSlides[currentSlide].code}</code>
                                 </pre>
                               </div>
@@ -727,19 +774,19 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between mt-3">
+          <div className="flex items-center justify-between mt-3 px-4 sm:px-0">
             <Button
               onClick={prevSlide}
               variant="outline"
               size="sm"
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 w-full sm:w-auto"
             >
               <ArrowLeft className="w-3 h-3" />
               <span className="text-xs">Previous</span>
             </Button>
 
             {/* Slide Indicators */}
-            <div className="flex space-x-1">
+            <div className="hidden sm:flex space-x-1">
               {fheSlides.map((_, index) => (
                 <button
                   key={index}
@@ -757,7 +804,7 @@ function vote(externalEuint64 encryptedVote, bytes calldata proof) external {
               onClick={nextSlide}
               variant="outline"
               size="sm"
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 w-full sm:w-auto"
             >
               <span className="text-xs">Next</span>
               <ArrowRightIcon className="w-3 h-3" />

@@ -20,6 +20,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, className = '' })
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const audioRef = useRef<HTMLAudioElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
+  const isTouchDraggingRef = useRef(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -40,36 +41,59 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, className = '' })
     };
   }, []);
 
-  // Drag functionality
+  // Drag functionality (mouse + touch)
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      
-      const newX = e.clientX - dragOffset.x;
-      const newY = e.clientY - dragOffset.y;
-      
-      // Keep within viewport bounds
+    const updatePosition = (clientX: number, clientY: number) => {
+      const newX = clientX - dragOffset.x;
+      const newY = clientY - dragOffset.y;
+
       const maxX = window.innerWidth - (playerRef.current?.offsetWidth || 320);
       const maxY = window.innerHeight - (playerRef.current?.offsetHeight || 200);
-      
+
       setPosition({
         x: Math.max(0, Math.min(newX, maxX)),
         y: Math.max(0, Math.min(newY, maxY))
       });
     };
 
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      updatePosition(e.clientX, e.clientY);
+    };
+
     const handleMouseUp = () => {
       setIsDragging(false);
+      isTouchDraggingRef.current = false;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isDragging || !isTouchDraggingRef.current) return;
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      updatePosition(t.clientX, t.clientY);
+      // Prevent the page from scrolling while dragging
+      e.preventDefault();
+    };
+
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+      isTouchDraggingRef.current = false;
     };
 
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd);
+      document.addEventListener('touchcancel', handleTouchEnd);
     }
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchmove', handleTouchMove as any);
+      document.removeEventListener('touchend', handleTouchEnd as any);
+      document.removeEventListener('touchcancel', handleTouchEnd as any);
     };
   }, [isDragging, dragOffset]);
 
@@ -159,6 +183,19 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, className = '' })
     setIsDragging(true);
   };
 
+  const handleTouchDragStart = (e: React.TouchEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('input[type="range"]') || target.closest('button') || target.closest('.slider')) {
+      return;
+    }
+    if (!playerRef.current || e.touches.length !== 1) return;
+    const t = e.touches[0];
+    const rect = playerRef.current.getBoundingClientRect();
+    setDragOffset({ x: t.clientX - rect.left, y: t.clientY - rect.top });
+    setIsDragging(true);
+    isTouchDraggingRef.current = true;
+  };
+
   return (
     <div 
       className={`fixed z-50 ${className}`}
@@ -183,6 +220,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, className = '' })
           <div 
             className="flex items-center justify-between mb-3 cursor-grab"
             onMouseDown={handleDragStart}
+            onTouchStart={handleTouchDragStart}
+            style={{ touchAction: 'none' }}
           >
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
@@ -215,6 +254,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, className = '' })
                 className="h-8 w-8 p-0 cursor-grab"
                 title="Drag to move"
                 onMouseDown={handleDragStart}
+                onTouchStart={handleTouchDragStart}
+                style={{ touchAction: 'none' }}
               >
                 <Move className="h-4 w-4" />
               </Button>
@@ -336,6 +377,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, className = '' })
           <div 
             className="flex items-center justify-between px-3 py-2 h-full cursor-grab"
             onMouseDown={handleDragStart}
+            onTouchStart={handleTouchDragStart}
+            style={{ touchAction: 'none' }}
           >
             {/* Play/Pause Button */}
             <Button
@@ -402,6 +445,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, className = '' })
                 className="h-6 w-6 p-0 cursor-grab"
                 title="Drag to move"
                 onMouseDown={handleDragStart}
+                onTouchStart={handleTouchDragStart}
+                style={{ touchAction: 'none' }}
               >
                 <Move className="h-3 w-3" />
               </Button>
