@@ -790,7 +790,7 @@ const CONTRACT_ABI = SimpleVotingABI.abi;
 
       <div className="text-center">
         <Button onClick={handleContinue} size="lg" className="gap-2">
-          Complete Tutorial <ArrowRight className="h-4 w-4" />
+          Continue to Review <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
     </div>
