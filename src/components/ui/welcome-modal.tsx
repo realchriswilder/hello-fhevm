@@ -176,19 +176,19 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
                 
                 {/* Wave Animation */}
                 <div className="flex items-center justify-center mb-3 sm:mb-4 flex-1">
-                  <div className="flex items-end gap-0.5 sm:gap-1 h-8 sm:h-12 lg:h-16 w-full max-w-xs sm:max-w-sm">
-                    {[...Array(20)].map((_, i) => (
+                  <div className="flex items-end gap-1 sm:gap-1.5 h-16 sm:h-20 lg:h-28 w-full max-w-md sm:max-w-lg lg:max-w-2xl">
+                    {[...Array(36)].map((_, i) => (
                       <div
                         key={i}
-                        className={`w-0.5 sm:w-1 bg-gradient-to-t from-primary to-primary/60 rounded-full transition-all duration-300 ${
+                        className={`w-1 sm:w-1 bg-gradient-to-t from-primary to-primary/60 rounded-full transition-all duration-300 ${
                           audioPlaying ? 'animate-pulse' : ''
                         }`}
                         style={{
                           height: audioPlaying 
                             ? `${Math.random() * 100 + 20}%` 
                             : '20%',
-                          animationDelay: `${i * 50}ms`,
-                          animationDuration: `${Math.random() * 200 + 300}ms`
+                          animationDelay: `${i * 35}ms`,
+                          animationDuration: `${Math.random() * 250 + 350}ms`
                         }}
                       />
                     ))}
