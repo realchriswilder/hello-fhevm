@@ -80,6 +80,7 @@ export const EnvironmentSetupStep: React.FC = () => {
       solutions: [
         "Update Node.js: Visit nodejs.org and download LTS version",
         "Use nvm: `nvm install 18 && nvm use 18`",
+        "If Node 18 gives issues, switch to Node 20 (recommended)",
         "Check PATH: Ensure Node.js is in your system PATH"
       ],
       prevention: "Always use LTS versions for stability"
@@ -445,11 +446,80 @@ export const EnvironmentSetupStep: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Compatibility & Docs callouts */}
+      {/* FHEVM Template Information */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.52 }}
+        className="space-y-3"
+      >
+        <Card className="tutorial-step border-yellow-200 bg-gradient-to-br from-yellow-50 to-amber-50 dark:border-yellow-800 dark:from-yellow-950/20 dark:to-amber-950/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Info className="h-4 w-4 text-yellow-600" />
+              Before Starting This Tutorial
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                <strong className="text-foreground">Before starting this tutorial, ensure you have:</strong>
+              </p>
+              <ul className="list-disc pl-4 space-y-1 text-sm text-muted-foreground">
+                <li>Installed the <strong className="text-foreground">FHEVM hardhat template</strong></li>
+              </ul>
+            </div>
+            
+            <div className="bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 space-y-2">
+              <div className="flex items-start gap-2">
+                <Shield className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
+                    Why Use the Official Template?
+                  </p>
+                  <p className="text-xs text-yellow-700 dark:text-yellow-300 leading-relaxed">
+                    Since it's the official template from the Zama team, they keep all dependencies updated 
+                    as and when they release new updates, so it's always recommended to clone that repo.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+              <p className="text-xs font-medium text-foreground">
+                For the voting app, we'll be walking through this guide - it's already covered in the template, 
+                so users can simply clone the repo as already stated below in the quick checklist.
+              </p>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-2 w-full sm:w-auto"
+                  asChild
+                >
+                  <a 
+                    href="https://github.com/zama-ai/fhevm-hardhat-template" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    View Official Template
+                  </a>
+                </Button>
+                <span className="text-xs text-muted-foreground">
+                  <strong>Repository:</strong> zama-ai/fhevm-hardhat-template
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Compatibility & Docs callouts */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.54 }}
         className="space-y-3"
       >
         <Card className="tutorial-step">
@@ -457,8 +527,8 @@ export const EnvironmentSetupStep: React.FC = () => {
             <CardTitle className="text-base">FHEVM Compatibility Check</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <p className="text-xs text-muted-foreground">Verify your stack uses the core Zama primitives we’ll rely on.</p>
-            <div className="flex items-center gap-2">
+            <p className="text-xs text-muted-foreground">Verify your stack uses the core Zama primitives we'll rely on.</p>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
               <Button size="sm" onClick={handleCompatCheck} className="gap-2 w-full sm:w-auto">
                 <Shield className="h-3 w-3" /> Run Check
               </Button>
