@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useTutorialStore } from '@/state/tutorialStore';
 import { useNavigate } from 'react-router-dom';
+import { WriteContractQuiz } from '@/components/quiz/WriteContractQuiz';
 import { cn } from '@/lib/utils';
 
 const FHECounterContract = `// SPDX-License-Identifier: MIT
@@ -764,6 +765,16 @@ export const WriteContractStep: React.FC = () => {
       </motion.div>
 
       {/* Next Steps */}
+      {/* Quiz Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.1 }}
+        className="space-y-4"
+      >
+        <WriteContractQuiz />
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

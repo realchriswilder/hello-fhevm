@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useTutorialStore } from '@/state/tutorialStore';
 import { useNavigate } from 'react-router-dom';
+import { TestingPlaygroundQuiz } from '@/components/quiz/TestingPlaygroundQuiz';
 import { initializeFheInstance, getFheInstance } from '../../../vote-app/src/fhe';
 
 interface LogEntry {
@@ -683,6 +684,16 @@ export const TestingPlaygroundStep: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Quiz Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="space-y-4"
+      >
+        <TestingPlaygroundQuiz />
+      </motion.div>
 
       {/* Continue Button */}
       <motion.div

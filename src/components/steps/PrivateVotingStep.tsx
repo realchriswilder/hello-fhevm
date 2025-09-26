@@ -8,6 +8,7 @@ import { Vote, ThumbsUp, ThumbsDown, ArrowRight, Loader2, Info, ChevronDown, Che
 import { useTutorialStore } from '@/state/tutorialStore';
 // removed mock tutorial services
 import { useNavigate } from 'react-router-dom';
+import { PrivateVotingQuiz } from '@/components/quiz/PrivateVotingQuiz';
 import { initializeFheInstance, getFheInstance } from '../../../vote-app/src/fhe';
 import { createWalletClient, createPublicClient, custom, http, decodeEventLog, type Hex } from 'viem';
 import { sepolia } from 'viem/chains';
@@ -788,10 +789,14 @@ const CONTRACT_ABI = SimpleVotingABI.abi;
         </Card>
       </div>
 
-      <div className="text-center">
-        <Button onClick={handleContinue} size="lg" className="gap-2">
-          Continue to Review <ArrowRight className="h-4 w-4" />
-        </Button>
+      <div className="space-y-4">
+        <PrivateVotingQuiz />
+        
+        <div className="text-center">
+          <Button onClick={handleContinue} size="lg" className="gap-2">
+            Continue to Review <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

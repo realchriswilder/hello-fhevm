@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { FileText, ArrowRight, Shield, ScrollText, Copy, Check, Eye, EyeOff } from 'lucide-react';
 import { useTutorialStore } from '@/state/tutorialStore';
 import { useNavigate } from 'react-router-dom';
+import { ContractOverviewQuiz } from '@/components/quiz/ContractOverviewQuiz';
 import { cn } from '@/lib/utils';
 
 export const ContractOverviewStep: React.FC = () => {
@@ -791,10 +792,14 @@ FHE.allowThis(session.noVotes);`}</code></pre>
         </Card>
       </div>
 
-      <div className="text-center">
-        <Button onClick={handleContinue} size="lg" className="gap-2">
-          Continue to Testing Playground <ArrowRight className="h-4 w-4" />
-        </Button>
+      <div className="space-y-4">
+        <ContractOverviewQuiz />
+        
+        <div className="text-center">
+          <Button onClick={handleContinue} size="lg" className="gap-2">
+            Continue to Testing Playground <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

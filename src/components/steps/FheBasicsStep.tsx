@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import { useTutorialStore } from '@/state/tutorialStore';
 import { useNavigate } from 'react-router-dom';
+import { FheBasicsQuiz } from '@/components/quiz/FheBasicsQuiz';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
@@ -1046,6 +1047,16 @@ export async function decryptValue(encryptedBytes: string): Promise<number> {
             </Accordion>
           </CardContent>
         </Card>
+      </motion.div>
+
+      {/* Quiz Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="space-y-4"
+      >
+        <FheBasicsQuiz />
       </motion.div>
 
       {/* Continue Button */}

@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useTutorialStore } from '@/state/tutorialStore';
 import { useNavigate } from 'react-router-dom';
+import { DeployTestCounterQuiz } from '@/components/quiz/DeployTestCounterQuiz';
 import { cn } from '@/lib/utils';
 import { useAccount, useChainId } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
@@ -1058,6 +1059,11 @@ export const DeployTestCounterStep: React.FC = () => {
                 </CardContent>
               </Card>
             </div>
+          </div>
+
+          {/* Quiz Section */}
+          <div className="mt-8">
+            <DeployTestCounterQuiz />
           </div>
 
           {/* Continue Button */}

@@ -68,7 +68,7 @@ const ReviewStep: React.FC = () => {
     },
     {
       title: "Explore Templates",
-      description: "Use React, Next.js, or Vue.js templates for rapid development",
+      description: "Use React, Hardhat templates for rapid development",
       icon: Code,
       action: "Browse Templates",
       href: "https://github.com/zama-ai/fhevm-hardhat-template"
