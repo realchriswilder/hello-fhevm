@@ -85,7 +85,7 @@ const tutorialContent: Record<TutorialStep, TutorialContent> = {
       title: "Setting Up Your Development Environment 🛠️",
       content: [
         "Before we start building, we need to install some tools. Think of this like setting up your workshop before starting a project.",
-        "We'll install Node.js (the engine that runs our code), pnpm (a package manager), and set up environment variables (configuration settings).",
+        "We'll install Node.js (the engine that runs our code), npm (a package manager), and set up environment variables (configuration settings).",
         "Don't worry if this seems technical - we'll guide you through each step!"
       ],
       tips: [
@@ -106,12 +106,12 @@ const tutorialContent: Record<TutorialStep, TutorialContent> = {
           command: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash"
         },
         {
-          description: "Install pnpm package manager",
-          command: "npm install -g pnpm"
+          description: "Verify npm package manager",
+          command: "npm --version"
         },
         {
           description: "Install project dependencies", 
-          command: "pnpm install"
+          command: "npm install"
         },
         {
           description: "Copy environment file",

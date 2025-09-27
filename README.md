@@ -59,7 +59,7 @@ npm run dev
 
 ### **Phase 1: Foundation** 🏗️
 1. **Welcome** - Introduction to FHEVM and confidential computing
-2. **Environment Setup** - Development tools, Node.js, pnpm, MetaMask
+2. **Environment Setup** - Development tools, Node.js, npm, MetaMask
 3. **Connect Wallet** - Wallet integration and Sepolia testnet setup
 
 ### **Phase 2: FHE Concepts** 🧠
@@ -79,7 +79,7 @@ npm run dev
 
 Each tutorial step includes a **"Test Your IQ"** quiz with 5 technical questions:
 
-- **Step 2**: Environment setup, Node.js, pnpm, development tools
+- **Step 2**: Environment setup, Node.js, npm, development tools
 - **Step 3**: Wallet security, MetaMask, Sepolia testnet
 - **Step 4**: FHE concepts, FHEVM architecture, encrypted types
 - **Step 5**: Smart contract development, FHE operations
@@ -93,7 +93,7 @@ Each tutorial step includes a **"Test Your IQ"** quiz with 5 technical questions
 
 ### Prerequisites
 - **Node.js** v18+ (LTS recommended)
-- **pnpm** (faster than npm)
+- **npm** (Node package manager)
 - **MetaMask** browser extension
 - **Sepolia ETH** for gas fees
 

@@ -50,7 +50,7 @@ export const EnvironmentSetupStep: React.FC = () => {
     },
     {
       id: 'npm',
-      name: 'npm/pnpm',
+      name: 'npm',
       description: 'Package manager',
       status: 'pending',
       command: 'npm --version'
@@ -87,14 +87,14 @@ export const EnvironmentSetupStep: React.FC = () => {
     },
     {
       issue: "Package installation fails",
-      symptoms: "npm/pnpm install errors or timeouts",
+      symptoms: "npm install errors or timeouts",
       solutions: [
-        "Clear cache: `npm cache clean --force` or `pnpm store prune`",
+        "Clear cache: `npm cache clean --force`",
         "Delete node_modules: `rm -rf node_modules package-lock.json`",
         "Use different registry: `npm config set registry https://registry.npmjs.org/`",
         "Check network: Ensure stable internet connection"
       ],
-      prevention: "Use pnpm for faster, more reliable installs"
+      prevention: "Use npm for reliable package management"
     },
     {
       issue: "MetaMask not detected",
@@ -134,8 +134,8 @@ export const EnvironmentSetupStep: React.FC = () => {
   const proTips = [
     {
       icon: Lightbulb,
-      title: "Use pnpm for faster installs",
-      description: "pnpm is 2-3x faster than npm and uses less disk space. It's perfect for FHEVM projects with many dependencies."
+      title: "Use npm for package management",
+      description: "npm is the standard Node.js package manager and works reliably with FHEVM projects. It's included with Node.js installation."
     },
     {
       icon: Shield,
@@ -162,14 +162,14 @@ export const EnvironmentSetupStep: React.FC = () => {
       url: "https://nodejs.org/"
     },
     {
-      title: "Install pnpm (recommended)",
-      description: "Fast, disk space efficient package manager",
-      command: "npm install -g pnpm",
+      title: "Verify npm installation",
+      description: "Check that npm is working correctly",
+      command: "npm --version",
     },
     {
       title: "Install project dependencies",
       description: "From the project root",
-      command: "pnpm i"
+      command: "npm install"
     },
     {
       title: "Set up environment variables",
@@ -210,7 +210,7 @@ export const EnvironmentSetupStep: React.FC = () => {
       };
       setChecks([...newChecks]);
 
-      // Check npm/pnpm
+      // Check npm
       setChecks(prev => prev.map(check => 
         check.id === 'npm' ? { ...check, status: 'checking' } : check
       ));
@@ -567,11 +567,11 @@ cd hello-fhevm`}</code></pre>
                 </div>
                 <div className="bg-muted rounded p-2">
                   <p className="text-xs font-semibold mb-1">1) Install & setup</p>
-                  <pre className="text-xs whitespace-pre-wrap break-words"><code>{`# Node 18+ and pnpm
-npm i -g pnpm
+                  <pre className="text-xs whitespace-pre-wrap break-words"><code>{`# Node 18+ and npm
+# npm comes with Node.js
 
 # From project root
-pnpm i
+npm install
 cp .env.example .env`}</code></pre>
                 </div>
                 <div className="bg-muted rounded p-2">
@@ -592,7 +592,7 @@ npx hardhat run scripts/deploy.cjs --network sepolia`}</code></pre>
                 <div className="bg-muted rounded p-2 -mx-1 sm:mx-0">
                   <p className="text-xs font-semibold mb-1">4) Run app</p>
                   <pre className="text-xs whitespace-pre-wrap break-words"><code>{`cd ..
-pnpm dev`}</code></pre>
+npm run dev`}</code></pre>
                 </div>
               </div>
             </div>

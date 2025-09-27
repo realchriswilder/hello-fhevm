@@ -272,7 +272,7 @@ export const WelcomeStep: React.FC = () => {
                       <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
                         <li>Install MetaMask (or compatible wallet)</li>
                         <li>Switch/Add Sepolia testnet, grab faucet ETH</li>
-                        <li>Install Node 18+, pnpm; copy .env files</li>
+                        <li>Install Node 18+, npm; copy .env files</li>
                         <li>Deploy contract, set VITE_VOTING_CONTRACT_ADDRESS</li>
                         <li>Run dev server and open the app</li>
                       </ul>
