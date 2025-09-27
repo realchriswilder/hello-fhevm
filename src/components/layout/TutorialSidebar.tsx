@@ -730,58 +730,60 @@ VIEW HELPER
   },
   "deploy-test-counter": {
     layman: {
-      title: "Deploy & Test FHE Counter: Real Blockchain Experience 🚀",
+      title: "Deploy & Test FHE Contracts: Real Blockchain Experience 🚀",
       content: [
-        "Now it's time to deploy the FHE counter contract to Sepolia testnet and interact with it in real-time!",
-        "You'll experience the full FHEVM workflow: deploy a contract, encrypt values, perform homomorphic operations, and decrypt results.",
-        "This gives you hands-on experience with how FHE contracts work on a live blockchain - no more simulations!"
+        "Now it's time to simulate deploying and testing different FHE contracts! Choose from multiple contract types and experience the full FHEVM workflow.",
+        "This is a realistic simulation that shows exactly how it would work if you deployed to Sepolia testnet or ran tests on a Hardhat node.",
+        "You'll experience the complete FHEVM workflow: contract deployment, value encryption, homomorphic operations, and result decryption - just like in real development!"
       ],
       keyPoints: [
-        "🚀 Deploy FHE counter to Sepolia testnet",
-        "🔐 Encrypt values using your wallet",
-        "➕ Perform homomorphic increment/decrement operations",
-        "🔍 Decrypt and view results in real-time"
+        "🚀 Simulate deployment of multiple FHE contract types (like Hardhat testnet)",
+        "🔐 Experience real wallet encryption workflow for each contract",
+        "➕ Test various homomorphic operations (addition, comparison, transfer)",
+        "🔍 See realistic terminal output with actual FHEVM function calls"
       ]
     },
     technical: {
-      title: "Live FHE Counter Deployment & Testing",
+      title: "Live FHE Contract Deployment & Testing",
       content: [
-        "Deploy FHECounter contract to Sepolia using your connected wallet. The contract uses euint32 for encrypted counter storage.",
-        "Test initial state: getCount() returns bytes32(0) indicating uninitialized encrypted value.",
-        "Increment test: encrypt value 1 using fhevm.createEncryptedInput(), call increment() with encrypted input and proof, verify count increased by 1.",
-        "Decrement test: encrypt value 1, call decrement(), verify count decreased by 1 back to 0.",
+        "Simulate deploying various FHE contracts (like on Hardhat testnet). Choose from Counter, Addition, Secret Game, or Confidential Transfer contracts.",
+        "This simulation shows exactly how it would work in real development - each contract demonstrates different FHEVM capabilities: encrypted storage, homomorphic operations, comparisons, and transfers.",
+        "Counter contract: test increment/decrement operations with encrypted values, verify state changes.",
+        "Addition contract: test homomorphic addition with two encrypted inputs, verify sum computation.",
+        "Secret Game: test encrypted number guessing with comparison operations and hint generation.",
+        "Confidential Transfer: test encrypted token transfers with balance management and verification.",
         "All operations use FHEVM's encryption/decryption workflow with proper proof generation and verification.",
         "Monitor transaction status, gas usage, and encrypted state changes through the terminal interface."
       ],
       code: [
         {
           language: "typescript",
-          snippet: `// Deploy FHECounter contract
-const factory = await ethers.getContractFactory("FHECounter");
-const fheCounter = await factory.deploy();
-const address = await fheCounter.getAddress();
+          snippet: `// Deploy FHE contract (Counter, Addition, Secret Game, or Transfer)
+const factory = await ethers.getContractFactory("FHEContract");
+const contract = await factory.deploy();
+const address = await contract.getAddress();
 
 // Encrypt value for homomorphic operation
-const encryptedOne = await fhevm
+const encryptedValue = await fhevm
   .createEncryptedInput(address, signer.address)
   .add32(1)
   .encrypt();
 
-// Call increment with encrypted input
-const tx = await fheCounter
+// Call contract function with encrypted input
+const tx = await contract
   .connect(signer)
-  .increment(encryptedOne.handles[0], encryptedOne.inputProof);
+  .contractFunction(encryptedValue.handles[0], encryptedValue.inputProof);
 await tx.wait();
 
 // Decrypt and verify result
-const encryptedCount = await fheCounter.getCount();
-const clearCount = await fhevm.userDecryptEuint(
+const encryptedResult = await contract.getResult();
+const clearResult = await fhevm.userDecryptEuint(
   FhevmType.euint32,
-  encryptedCount,
+  encryptedResult,
   address,
   signer
 );`,
-          description: "Complete FHE counter deployment and testing workflow"
+          description: "Complete FHE contract deployment and testing workflow"
         }
       ],
       links: [

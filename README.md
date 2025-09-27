@@ -131,7 +131,38 @@ npx hardhat compile
 
 # Deploy to Sepolia
 npx hardhat run scripts/deploy.cjs --network sepolia
+
+# Test contracts (run all tests)
+npm test
+
+# Test specific contract
+npm test -- --grep "SimpleVoting"
 ```
+
+## 🧪 Testing
+
+The tutorial includes comprehensive test suites for all FHE contracts:
+
+```bash
+# Run all tests
+npm test
+
+# Test voting contract specifically
+npm test -- --grep "SimpleVoting"
+
+# Test with coverage
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+**Test Coverage:**
+- ✅ **SimpleVoting Contract** - Complete voting logic and FHE operations
+- ✅ **FHECounter Contract** - Increment/decrement operations
+- ✅ **FHE Addition Contract** - Homomorphic addition operations
+- ✅ **Secret Number Game** - Encrypted comparison operations
+- ✅ **Confidential Transfer** - Encrypted token transfer operations
 
 ## 🎮 Live Demos
 

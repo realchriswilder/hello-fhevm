@@ -71,8 +71,8 @@ const steps: {
   },
   {
     id: 'deploy-test-counter',
-    title: 'Simulate & Test Counter',
-    description: 'Simulate FHE counter deployment and test live',
+    title: 'Simulate and test contracts',
+    description: 'Simulate FHE contract deployment and test live',
     icon: Rocket,
     estimatedTime: '8 min'
   },

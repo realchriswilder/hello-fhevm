@@ -1237,10 +1237,10 @@ export const DeployTestCounterStep: React.FC = () => {
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Header */}
           <div className="text-center space-y-4 mb-8">
-            <h1 className="text-4xl font-bold">Deploy & Test FHE Counter</h1>
+            <h1 className="text-4xl font-bold">Simulate & Test FHE Contracts</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Simulate deploying the FHE counter contract and interact with it in real-time. 
-              Experience how FHE operations work through a realistic simulation.
+              Simulate deploying different FHE contracts and interact with them in real-time. 
+              Experience how FHE operations work through a realistic simulation (like Hardhat testnet).
             </p>
             
             {/* Simulation Status */}
