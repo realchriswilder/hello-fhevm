@@ -319,7 +319,19 @@ function resolveTallyCallback(
         "Think of it like a calculator that works with locked boxes - you can add numbers together without ever seeing what's inside the boxes!",
         "We'll compare this to a regular Solidity counter so you can see exactly what makes FHEVM special.",
         "Plus, we'll show you how to build the frontend that interacts with your FHEVM contract using the Zama Relayer SDK!",
-        "Don't worry if you're new to Solidity or frontend development - we'll explain every line step by step!"
+        "Don't worry if you're new to Solidity or frontend development - we'll explain every line step by step!",
+        "",
+        "🎯 Contract Examples We'll Explore:",
+        "",
+        "1. FHE Counter - Like a digital abacus that works with locked numbers. You can add and subtract without ever seeing the actual values!",
+        "",
+        "2. FHE Addition - A simple calculator that adds two encrypted numbers together. It's like having two locked boxes and being able to add their contents without opening either box!",
+        "",
+        "3. Secret Number Game - A guessing game where the secret number is encrypted. Players make encrypted guesses and get encrypted hints (too low, too high, or correct) without revealing the actual number!",
+        "",
+        "4. Confidential Transfer - Like a private bank transfer where the amounts are encrypted. You can send tokens without anyone seeing how much you're sending, but the system still prevents you from spending more than you have!",
+        "",
+        "Each contract shows different ways to use encrypted data while keeping everything private and secure."
       ],
       keyPoints: [
         "🔢 Simple counter with encrypted numbers",
@@ -327,33 +339,47 @@ function resolveTallyCallback(
         "🔍 Compare FHEVM vs regular Solidity",
         "📚 Learn FHEVM syntax step by step",
         "🌐 Build frontend with Zama Relayer SDK",
-        "📱 Complete dApp development guide"
+        "📱 Complete dApp development guide",
+        "🎮 Interactive examples: Counter, Addition, Secret Game, Confidential Transfer",
+        "🔐 All data stays encrypted until you choose to reveal it"
       ],
       tips: [
         "💡 Follow along with the code examples",
         "🔍 Notice the differences from regular Solidity",
         "📝 Try to understand each function as we go",
-        "❓ Ask questions if anything seems unclear"
+        "❓ Ask questions if anything seems unclear",
+        "🎯 Switch between contract tabs to see different examples",
+        "🔍 Use 'Show Explanations' to understand each line of code"
       ]
     },
     technical: {
       title: "FHEVM Contract & Frontend Development",
       content: [
-        "This step walks through building a complete FHEVM contract from scratch and the frontend that interacts with it. We'll examine each component and compare it to standard Solidity patterns.",
-        "Contract concepts covered:",
-        "• FHE imports and configuration",
-        "• Encrypted data types (euint32, externalEuint32)",
-        "• Homomorphic operations (add, sub)",
+        "This step walks through building complete FHEVM contracts from scratch and the frontend that interacts with them. We'll examine each component and compare it to standard Solidity patterns.",
+        "",
+        "Contract Examples Covered:",
+        "",
+        "1. FHECounter - Basic encrypted counter with increment/decrement operations using euint32",
+        "2. FHEAddition - Two-input encrypted addition with euint8, demonstrating input validation and result management",
+        "3. SecretNumberGame - Encrypted guessing game using euint32 comparisons, FHE.select() for conditional logic, and encrypted hint generation",
+        "4. ConfidentialTransfer - Encrypted token transfers with euint64 balances, conditional updates using FHE.le() and FHE.select()",
+        "",
+        "Core FHEVM Concepts Demonstrated:",
+        "• FHE imports and SepoliaConfig inheritance",
+        "• Encrypted data types (euint8, euint32, euint64, ebool)",
+        "• External input handling (externalEuint8, externalEuint32, externalEuint64)",
+        "• Homomorphic operations (add, sub, eq, lt, le, select)",
         "• Permission management (allowThis, allow)",
         "• Input validation and proof verification",
+        "• Conditional logic without branching on encrypted data",
         "",
-        "Frontend concepts covered:",
-        "• Zama Relayer SDK integration",
+        "Frontend Integration:",
+        "• Zama Relayer SDK integration patterns",
         "• Client-side encryption with FHEVM",
-        "• Contract interaction patterns",
-        "• NPM vs CDN installation options",
+        "• Contract interaction and state management",
+        "• Error handling and user feedback",
         "",
-        "The complete guide demonstrates core FHEVM patterns and frontend integration that you'll use in more complex applications."
+        "Each contract example demonstrates different FHEVM patterns you'll use in production applications."
       ],
       code: [
         {

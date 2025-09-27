@@ -89,6 +89,225 @@ contract RegularCounter {
     }
 }`;
 
+const FHEAdditionContract = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import { FHE, euint8, externalEuint8 } from "@fhevm/solidity/lib/FHE.sol";
+import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+
+contract FHEAdd is SepoliaConfig {
+    euint8 private _a;
+    euint8 private _b;
+    euint8 private _result;
+
+    bool private _hasA;
+    bool private _hasB;
+
+    event InputsSet(address indexed setter, bool hasA, bool hasB);
+    event SumComputed(address indexed caller);
+
+    function setA(externalEuint8 inputA, bytes calldata inputProof) external {
+        _a = FHE.fromExternal(inputA, inputProof);
+        FHE.allowThis(_a);
+        _hasA = true;
+        emit InputsSet(msg.sender, _hasA, _hasB);
+    }
+
+    function setB(externalEuint8 inputB, bytes calldata inputProof) external {
+        _b = FHE.fromExternal(inputB, inputProof);
+        FHE.allowThis(_b);
+        _hasB = true;
+        emit InputsSet(msg.sender, _hasA, _hasB);
+    }
+
+    function computeSum() external {
+        require(_hasA && _hasB, "Inputs not set");
+        _result = FHE.add(_a, _b);
+        FHE.allowThis(_result);
+        FHE.allow(_result, msg.sender);
+        emit SumComputed(msg.sender);
+    }
+
+    function grantAccess(address user) external {
+        require(user != address(0), "bad addr");
+        FHE.allow(_result, user);
+    }
+
+    function getResult() external view returns (euint8) {
+        return _result;
+    }
+}`;
+
+const SecretNumberGameContract = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import { FHE, euint32, ebool, externalEuint32 } from "@fhevm/solidity/lib/FHE.sol";
+import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+
+contract SecretNumberGame is SepoliaConfig {
+    euint32 private secretNumber;
+    mapping(address => euint32) public attempts;
+    mapping(address => euint32) public lastHint;
+    mapping(address => bool) private _attemptInit;
+    
+    constructor() {}
+
+    function setSecret(
+        externalEuint32 encSecret,
+        bytes calldata proof
+    ) external {
+        secretNumber = FHE.fromExternal(encSecret, proof);
+        FHE.allowThis(secretNumber);
+    }
+
+    function makeGuess(
+        externalEuint32 encryptedGuess,
+        bytes calldata inputProof
+    ) external {
+        euint32 guess = FHE.fromExternal(encryptedGuess, inputProof);
+        
+        if (!_attemptInit[msg.sender]) {
+            attempts[msg.sender] = FHE.asEuint32(0);
+            _attemptInit[msg.sender] = true;
+            FHE.allowThis(attempts[msg.sender]);
+        }
+        attempts[msg.sender] = FHE.add(attempts[msg.sender], FHE.asEuint32(1));
+        FHE.allowThis(attempts[msg.sender]);
+        
+        ebool isEqual = FHE.eq(guess, secretNumber);
+        ebool isLower = FHE.lt(guess, secretNumber);
+        
+        euint32 zero = FHE.asEuint32(0);
+        euint32 one  = FHE.asEuint32(1);
+        euint32 two  = FHE.asEuint32(2);
+        euint32 lowOrHigh = FHE.select(isLower, zero, one);
+        euint32 hint = FHE.select(isEqual, two, lowOrHigh);
+        
+        lastHint[msg.sender] = hint;
+        FHE.allowThis(lastHint[msg.sender]);
+    }
+
+    function getAttempts(address player) external view returns (euint32) {
+        return attempts[player];
+    }
+    
+    function allowAttempts(address user) external {
+        require(msg.sender == user, "Can only allow own attempts");
+        FHE.allow(attempts[user], user);
+    }
+    
+    function allowMyHint() external {
+        FHE.allow(lastHint[msg.sender], msg.sender);
+    }
+}`;
+
+const ConfidentialTransferContract = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import { FHE, euint64, ebool, externalEuint64 } from "@fhevm/solidity/lib/FHE.sol";
+import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+
+contract ConfidentialERC20 is SepoliaConfig {
+    mapping(address => euint64) private balances;
+    mapping(address => bool) private _balanceInit;
+    mapping(address => ebool) private _transferSuccess;
+    euint64 private totalSupply;
+    bool private _supplyInitialized;
+    
+    string public name = "Confidential Token";
+    string public symbol = "CTKN";
+    uint8 public decimals = 18;
+    
+    event Transfer(address indexed from, address indexed to);
+    event Mint(address indexed to);
+
+    constructor() {
+        totalSupply = FHE.asEuint64(0);
+        FHE.allowThis(totalSupply);
+    }
+    
+    function initializeSupply(
+        externalEuint64 encryptedSupply,
+        bytes calldata inputProof
+    ) external {
+        require(!_supplyInitialized, "Supply already initialized");
+        euint64 supply = FHE.fromExternal(encryptedSupply, inputProof);
+        totalSupply = supply;
+        balances[msg.sender] = supply;
+        _balanceInit[msg.sender] = true;
+        _supplyInitialized = true;
+        FHE.allowThis(totalSupply);
+        FHE.allowThis(balances[msg.sender]);
+        emit Mint(msg.sender);
+    }
+
+    function transfer(
+        address to,
+        externalEuint64 encryptedAmount,
+        bytes calldata inputProof
+    ) external returns (bool) {
+        euint64 amount = FHE.fromExternal(encryptedAmount, inputProof);
+        
+        if (!_balanceInit[to]) {
+            balances[to] = FHE.asEuint64(0);
+            _balanceInit[to] = true;
+        }
+        
+        ebool canPay = FHE.le(amount, balances[msg.sender]);
+        euint64 senderMinus = FHE.sub(balances[msg.sender], amount);
+        euint64 toPlus = FHE.add(balances[to], amount);
+        
+        balances[msg.sender] = FHE.select(canPay, senderMinus, balances[msg.sender]);
+        balances[to] = FHE.select(canPay, toPlus, balances[to]);
+        
+        _transferSuccess[msg.sender] = canPay;
+        
+        FHE.allowThis(balances[msg.sender]);
+        FHE.allowThis(balances[to]);
+        FHE.allowThis(_transferSuccess[msg.sender]);
+        
+        emit Transfer(msg.sender, to);
+        return true;
+    }
+
+    function balanceOf(address account) external view returns (euint64) {
+        return balances[account];
+    }
+    
+    function allowMyBalance() external {
+        FHE.allow(balances[msg.sender], msg.sender);
+    }
+    
+    function allowMyTransferResult() external {
+        FHE.allow(_transferSuccess[msg.sender], msg.sender);
+    }
+    
+    function mint(
+        address to,
+        externalEuint64 encryptedAmount,
+        bytes calldata inputProof
+    ) external {
+        euint64 amount = FHE.fromExternal(encryptedAmount, inputProof);
+        
+        if (!_balanceInit[to]) {
+            balances[to] = FHE.asEuint64(0);
+            _balanceInit[to] = true;
+        }
+        
+        balances[to] = FHE.add(balances[to], amount);
+        totalSupply = FHE.add(totalSupply, amount);
+        
+        FHE.allowThis(balances[to]);
+        FHE.allowThis(totalSupply);
+        
+        emit Mint(to);
+    }
+    
+    function getTotalSupply() external view returns (euint64) {
+        return totalSupply;
+    }
+}`;
+
 const contractExplanations = [
   {
     line: 1,
@@ -192,10 +411,379 @@ const contractExplanations = [
   }
 ];
 
+const fheAdditionExplanations = [
+  {
+    line: 1,
+    text: "Standard Solidity license and version declaration",
+    highlight: "bg-blue-100 dark:bg-blue-900/30"
+  },
+  {
+    line: 3,
+    text: "Import FHE types for 8-bit encrypted integers",
+    highlight: "bg-green-100 dark:bg-green-900/30"
+  },
+  {
+    line: 4,
+    text: "Import Sepolia configuration for FHEVM deployment",
+    highlight: "bg-purple-100 dark:bg-purple-900/30"
+  },
+  {
+    line: 6,
+    text: "Contract for encrypted addition operations",
+    highlight: "bg-yellow-100 dark:bg-yellow-900/30"
+  },
+  {
+    line: 7,
+    text: "Encrypted input values for addition",
+    highlight: "bg-red-100 dark:bg-red-900/30"
+  },
+  {
+    line: 8,
+    text: "Encrypted result of the addition operation",
+    highlight: "bg-orange-100 dark:bg-orange-900/30"
+  },
+  {
+    line: 10,
+    text: "Track which inputs have been set",
+    highlight: "bg-cyan-100 dark:bg-cyan-900/30"
+  },
+  {
+    line: 12,
+    text: "Event emitted when inputs are set",
+    highlight: "bg-pink-100 dark:bg-pink-900/30"
+  },
+  {
+    line: 13,
+    text: "Event emitted when sum is computed",
+    highlight: "bg-indigo-100 dark:bg-indigo-900/30"
+  },
+  {
+    line: 15,
+    text: "Set first encrypted input with proof validation",
+    highlight: "bg-teal-100 dark:bg-teal-900/30"
+  },
+  {
+    line: 16,
+    text: "Convert external encrypted input to internal FHE type",
+    highlight: "bg-amber-100 dark:bg-amber-900/30"
+  },
+  {
+    line: 17,
+    text: "Allow contract to manage this encrypted value",
+    highlight: "bg-lime-100 dark:bg-lime-900/30"
+  },
+  {
+    line: 23,
+    text: "Set second encrypted input with proof validation",
+    highlight: "bg-emerald-100 dark:bg-emerald-900/30"
+  },
+  {
+    line: 28,
+    text: "Compute homomorphic addition on encrypted inputs",
+    highlight: "bg-rose-100 dark:bg-rose-900/30"
+  },
+  {
+    line: 29,
+    text: "Ensure both inputs are set before computation",
+    highlight: "bg-sky-100 dark:bg-sky-900/30"
+  },
+  {
+    line: 30,
+    text: "Perform encrypted addition without decryption",
+    highlight: "bg-violet-100 dark:bg-violet-900/30"
+  }
+];
+
+const secretGameExplanations = [
+  {
+    line: 1,
+    text: "Standard Solidity license and version declaration",
+    highlight: "bg-blue-100 dark:bg-blue-900/30"
+  },
+  {
+    line: 3,
+    text: "Import FHE types for encrypted numbers and booleans",
+    highlight: "bg-green-100 dark:bg-green-900/30"
+  },
+  {
+    line: 4,
+    text: "Import Sepolia configuration for FHEVM deployment",
+    highlight: "bg-purple-100 dark:bg-purple-900/30"
+  },
+  {
+    line: 6,
+    text: "Contract for encrypted number guessing game",
+    highlight: "bg-yellow-100 dark:bg-yellow-900/30"
+  },
+  {
+    line: 7,
+    text: "Encrypted secret number to be guessed",
+    highlight: "bg-red-100 dark:bg-red-900/30"
+  },
+  {
+    line: 8,
+    text: "Track encrypted attempt count per player",
+    highlight: "bg-orange-100 dark:bg-orange-900/30"
+  },
+  {
+    line: 9,
+    text: "Store encrypted hints (0=too low, 1=too high, 2=correct)",
+    highlight: "bg-cyan-100 dark:bg-cyan-900/30"
+  },
+  {
+    line: 10,
+    text: "Track if player's attempt count is initialized",
+    highlight: "bg-pink-100 dark:bg-pink-900/30"
+  },
+  {
+    line: 14,
+    text: "Set the encrypted secret number with proof",
+    highlight: "bg-indigo-100 dark:bg-indigo-900/30"
+  },
+  {
+    line: 15,
+    text: "Convert external encrypted input to internal FHE type",
+    highlight: "bg-teal-100 dark:bg-teal-900/30"
+  },
+  {
+    line: 16,
+    text: "Allow contract to manage the secret number",
+    highlight: "bg-amber-100 dark:bg-amber-900/30"
+  },
+  {
+    line: 20,
+    text: "Make an encrypted guess with proof validation",
+    highlight: "bg-lime-100 dark:bg-lime-900/30"
+  },
+  {
+    line: 21,
+    text: "Convert encrypted guess to internal FHE type",
+    highlight: "bg-emerald-100 dark:bg-emerald-900/30"
+  },
+  {
+    line: 24,
+    text: "Initialize attempt count if first guess",
+    highlight: "bg-rose-100 dark:bg-rose-900/30"
+  },
+  {
+    line: 25,
+    text: "Create encrypted zero for initialization",
+    highlight: "bg-sky-100 dark:bg-sky-900/30"
+  },
+  {
+    line: 30,
+    text: "Increment encrypted attempt count",
+    highlight: "bg-violet-100 dark:bg-violet-900/30"
+  },
+  {
+    line: 33,
+    text: "Compare guess with secret using encrypted equality",
+    highlight: "bg-fuchsia-100 dark:bg-fuchsia-900/30"
+  },
+  {
+    line: 34,
+    text: "Check if guess is lower than secret",
+    highlight: "bg-slate-100 dark:bg-slate-900/30"
+  },
+  {
+    line: 37,
+    text: "Create encrypted constants for hint logic",
+    highlight: "bg-stone-100 dark:bg-stone-900/30"
+  },
+  {
+    line: 40,
+    text: "Select hint based on comparison results",
+    highlight: "bg-zinc-100 dark:bg-zinc-900/30"
+  },
+  {
+    line: 41,
+    text: "Final hint: 0=too low, 1=too high, 2=correct",
+    highlight: "bg-neutral-100 dark:bg-neutral-900/30"
+  }
+];
+
+const confidentialTransferExplanations = [
+  {
+    line: 1,
+    text: "Standard Solidity license and version declaration",
+    highlight: "bg-blue-100 dark:bg-blue-900/30"
+  },
+  {
+    line: 3,
+    text: "Import FHE types for encrypted 64-bit integers and booleans",
+    highlight: "bg-green-100 dark:bg-green-900/30"
+  },
+  {
+    line: 4,
+    text: "Import Sepolia configuration for FHEVM deployment",
+    highlight: "bg-purple-100 dark:bg-purple-900/30"
+  },
+  {
+    line: 6,
+    text: "Contract for confidential token transfers",
+    highlight: "bg-yellow-100 dark:bg-yellow-900/30"
+  },
+  {
+    line: 8,
+    text: "Encrypted token balances per address",
+    highlight: "bg-red-100 dark:bg-red-900/30"
+  },
+  {
+    line: 9,
+    text: "Track if address balance is initialized",
+    highlight: "bg-orange-100 dark:bg-orange-900/30"
+  },
+  {
+    line: 10,
+    text: "Store encrypted transfer success status for each address",
+    highlight: "bg-cyan-100 dark:bg-cyan-900/30"
+  },
+  {
+    line: 11,
+    text: "Encrypted total token supply",
+    highlight: "bg-pink-100 dark:bg-pink-900/30"
+  },
+  {
+    line: 12,
+    text: "Track if supply has been initialized",
+    highlight: "bg-indigo-100 dark:bg-indigo-900/30"
+  },
+  {
+    line: 14,
+    text: "Token metadata (name, symbol, decimals)",
+    highlight: "bg-teal-100 dark:bg-teal-900/30"
+  },
+  {
+    line: 18,
+    text: "Events for transfer and mint operations",
+    highlight: "bg-amber-100 dark:bg-amber-900/30"
+  },
+  {
+    line: 21,
+    text: "Initialize with zero encrypted supply",
+    highlight: "bg-lime-100 dark:bg-lime-900/30"
+  },
+  {
+    line: 22,
+    text: "Create encrypted zero for initialization",
+    highlight: "bg-emerald-100 dark:bg-emerald-900/30"
+  },
+  {
+    line: 23,
+    text: "Allow contract to manage total supply",
+    highlight: "bg-rose-100 dark:bg-rose-900/30"
+  },
+  {
+    line: 26,
+    text: "Initialize encrypted token supply",
+    highlight: "bg-sky-100 dark:bg-sky-900/30"
+  },
+  {
+    line: 27,
+    text: "Prevent multiple supply initializations",
+    highlight: "bg-violet-100 dark:bg-violet-900/30"
+  },
+  {
+    line: 28,
+    text: "Convert external encrypted input to internal FHE type",
+    highlight: "bg-fuchsia-100 dark:bg-fuchsia-900/30"
+  },
+  {
+    line: 29,
+    text: "Set total supply and initial balance",
+    highlight: "bg-slate-100 dark:bg-slate-900/30"
+  },
+  {
+    line: 30,
+    text: "Mark sender as having initialized balance",
+    highlight: "bg-stone-100 dark:bg-stone-900/30"
+  },
+  {
+    line: 31,
+    text: "Prevent further supply initialization",
+    highlight: "bg-zinc-100 dark:bg-zinc-900/30"
+  },
+  {
+    line: 32,
+    text: "Allow contract to manage supply and balance",
+    highlight: "bg-neutral-100 dark:bg-neutral-900/30"
+  },
+  {
+    line: 33,
+    text: "Emit mint event for initial supply",
+    highlight: "bg-red-100 dark:bg-red-900/30"
+  },
+  {
+    line: 37,
+    text: "Transfer encrypted tokens between addresses",
+    highlight: "bg-orange-100 dark:bg-orange-900/30"
+  },
+  {
+    line: 38,
+    text: "Convert encrypted amount to internal FHE type",
+    highlight: "bg-yellow-100 dark:bg-yellow-900/30"
+  },
+  {
+    line: 41,
+    text: "Initialize recipient balance if needed",
+    highlight: "bg-green-100 dark:bg-green-900/30"
+  },
+  {
+    line: 42,
+    text: "Create encrypted zero for new balances",
+    highlight: "bg-blue-100 dark:bg-blue-900/30"
+  },
+  {
+    line: 46,
+    text: "Check if sender has sufficient balance",
+    highlight: "bg-purple-100 dark:bg-purple-900/30"
+  },
+  {
+    line: 47,
+    text: "Calculate new sender balance after transfer",
+    highlight: "bg-pink-100 dark:bg-pink-900/30"
+  },
+  {
+    line: 48,
+    text: "Calculate new recipient balance after transfer",
+    highlight: "bg-indigo-100 dark:bg-indigo-900/30"
+  },
+  {
+    line: 51,
+    text: "Conditionally update balances based on sufficiency",
+    highlight: "bg-teal-100 dark:bg-teal-900/30"
+  },
+  {
+    line: 52,
+    text: "Use select to prevent underflow on insufficient balance",
+    highlight: "bg-amber-100 dark:bg-amber-900/30"
+  },
+  {
+    line: 55,
+    text: "Store encrypted transfer success status for sender",
+    highlight: "bg-lime-100 dark:bg-lime-900/30"
+  },
+  {
+    line: 58,
+    text: "Allow contract to manage updated balances",
+    highlight: "bg-emerald-100 dark:bg-emerald-900/30"
+  },
+  {
+    line: 59,
+    text: "Allow contract to manage transfer success status",
+    highlight: "bg-rose-100 dark:bg-rose-900/30"
+  },
+  {
+    line: 61,
+    text: "Emit transfer event (amount not revealed)",
+    highlight: "bg-sky-100 dark:bg-sky-900/30"
+  }
+];
+
 export const WriteContractStep: React.FC = () => {
   const { completeStep, setCurrentStep } = useTutorialStore();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'fhe' | 'regular'>('fhe');
+  const [activeTab, setActiveTab] = useState<'fhe' | 'regular' | 'addition' | 'secret' | 'transfer'>('fhe');
   const [showExplanations, setShowExplanations] = useState(false);
   const [copiedText, setCopiedText] = useState<string | null>(null);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
@@ -319,15 +907,27 @@ export const WriteContractStep: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'fhe' | 'regular')}>
-              <TabsList className="grid w-full grid-cols-2">
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'fhe' | 'regular' | 'addition' | 'secret' | 'transfer')}>
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="fhe" className="flex items-center gap-2">
                   <FileText className="h-4 w-4" />
-                  FHEVM Counter
+                  FHE Counter
                 </TabsTrigger>
                 <TabsTrigger value="regular" className="flex items-center gap-2">
                   <Code className="h-4 w-4" />
                   Regular Solidity
+                </TabsTrigger>
+                <TabsTrigger value="addition" className="flex items-center gap-2">
+                  <Play className="h-4 w-4" />
+                  FHE Addition
+                </TabsTrigger>
+                <TabsTrigger value="secret" className="flex items-center gap-2">
+                  <Eye className="h-4 w-4" />
+                  Secret Game
+                </TabsTrigger>
+                <TabsTrigger value="transfer" className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  Confidential Transfer
                 </TabsTrigger>
               </TabsList>
               
@@ -397,6 +997,153 @@ export const WriteContractStep: React.FC = () => {
                           <code className="flex-1 whitespace-pre">{line}</code>
                         </div>
                       ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="addition" className="mt-4">
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <Badge variant="outline">FHE Addition Contract</Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowExplanations(!showExplanations)}
+                        className="flex items-center gap-2"
+                      >
+                        {showExplanations ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showExplanations ? 'Hide' : 'Show'} Explanations
+                      </Button>
+                    </div>
+                    <CopyButton text={FHEAdditionContract} id="addition-contract" />
+                  </div>
+                  
+                  <ScrollArea className="h-96 border rounded-lg overflow-x-auto">
+                    <div className="p-4 font-mono text-sm min-w-[920px]">
+                      {FHEAdditionContract.split('\n').map((line, index) => {
+                        const explanation = fheAdditionExplanations.find(exp => exp.line === index + 1);
+                        return (
+                          <div
+                            key={index}
+                            className={cn(
+                              "flex flex-col lg:flex-row items-start gap-2 lg:gap-4 py-1",
+                              explanation && showExplanations ? explanation.highlight : ""
+                            )}
+                          >
+                            <div className="flex items-start gap-2 lg:gap-4 w-full lg:w-auto">
+                              <span className="text-muted-foreground w-8 text-right select-none flex-shrink-0">
+                                {index + 1}
+                              </span>
+                              <code className="flex-1 whitespace-pre">{line}</code>
+                            </div>
+                            {explanation && showExplanations && (
+                              <div className="ml-6 lg:ml-4 p-2 bg-muted dark:bg-muted/50 rounded text-xs max-w-full lg:max-w-xs">
+                                {explanation.text}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="secret" className="mt-4">
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <Badge variant="outline">Secret Number Game</Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowExplanations(!showExplanations)}
+                        className="flex items-center gap-2"
+                      >
+                        {showExplanations ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showExplanations ? 'Hide' : 'Show'} Explanations
+                      </Button>
+                    </div>
+                    <CopyButton text={SecretNumberGameContract} id="secret-contract" />
+                  </div>
+                  
+                  <ScrollArea className="h-96 border rounded-lg overflow-x-auto">
+                    <div className="p-4 font-mono text-sm min-w-[920px]">
+                      {SecretNumberGameContract.split('\n').map((line, index) => {
+                        const explanation = secretGameExplanations.find(exp => exp.line === index + 1);
+                        return (
+                          <div
+                            key={index}
+                            className={cn(
+                              "flex flex-col lg:flex-row items-start gap-2 lg:gap-4 py-1",
+                              explanation && showExplanations ? explanation.highlight : ""
+                            )}
+                          >
+                            <div className="flex items-start gap-2 lg:gap-4 w-full lg:w-auto">
+                              <span className="text-muted-foreground w-8 text-right select-none flex-shrink-0">
+                                {index + 1}
+                              </span>
+                              <code className="flex-1 whitespace-pre">{line}</code>
+                            </div>
+                            {explanation && showExplanations && (
+                              <div className="ml-6 lg:ml-4 p-2 bg-muted dark:bg-muted/50 rounded text-xs max-w-full lg:max-w-xs">
+                                {explanation.text}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="transfer" className="mt-4">
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <Badge variant="outline">Confidential Transfer</Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowExplanations(!showExplanations)}
+                        className="flex items-center gap-2"
+                      >
+                        {showExplanations ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showExplanations ? 'Hide' : 'Show'} Explanations
+                      </Button>
+                    </div>
+                    <CopyButton text={ConfidentialTransferContract} id="transfer-contract" />
+                  </div>
+                  
+                  <ScrollArea className="h-96 border rounded-lg overflow-x-auto">
+                    <div className="p-4 font-mono text-sm min-w-[920px]">
+                      {ConfidentialTransferContract.split('\n').map((line, index) => {
+                        const explanation = confidentialTransferExplanations.find(exp => exp.line === index + 1);
+                        return (
+                          <div
+                            key={index}
+                            className={cn(
+                              "flex flex-col lg:flex-row items-start gap-2 lg:gap-4 py-1",
+                              explanation && showExplanations ? explanation.highlight : ""
+                            )}
+                          >
+                            <div className="flex items-start gap-2 lg:gap-4 w-full lg:w-auto">
+                              <span className="text-muted-foreground w-8 text-right select-none flex-shrink-0">
+                                {index + 1}
+                              </span>
+                              <code className="flex-1 whitespace-pre">{line}</code>
+                            </div>
+                            {explanation && showExplanations && (
+                              <div className="ml-6 lg:ml-4 p-2 bg-muted dark:bg-muted/50 rounded text-xs max-w-full lg:max-w-xs">
+                                {explanation.text}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </ScrollArea>
                 </div>

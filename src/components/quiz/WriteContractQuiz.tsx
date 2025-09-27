@@ -30,55 +30,120 @@ const quizQuestions: QuizQuestion[] = [
   },
   {
     id: 2,
-    question: "Why do FHEVM functions require both encrypted input and a proof?",
+    question: "In the FHE Addition contract, what happens when you call computeSum()?",
     options: [
-      "To reduce gas costs",
-      "To validate that the encrypted input is well-formed and matches the claimed plaintext",
-      "To make the function faster",
-      "To store the input permanently"
+      "It decrypts the inputs and adds them normally",
+      "It performs homomorphic addition on encrypted inputs without decrypting them",
+      "It returns the plaintext values",
+      "It generates new encryption keys"
     ],
     correctAnswer: 1,
-    explanation: "The proof validates that the encrypted input is well-formed and matches the claimed plaintext value. This prevents malicious users from submitting invalid ciphertexts that could corrupt the contract state.",
+    explanation: "computeSum() performs homomorphic addition on the encrypted inputs _a and _b without ever decrypting them. The result remains encrypted until explicitly decrypted with proper permissions.",
     category: 'operations'
   },
   {
     id: 3,
-    question: "What does FHE.fromExternal() do?",
+    question: "In the Secret Number Game contract, how does the hint system work?",
     options: [
-      "Encrypts a plaintext value",
-      "Converts external encrypted input to internal euint8 for use in the contract",
-      "Decrypts an encrypted value",
-      "Generates a new encryption key"
+      "Hints are stored as plaintext numbers",
+      "Hints are encrypted and use FHE.select() to choose between 'too low' (0), 'too high' (1), or 'correct' (2)",
+      "Hints are decrypted immediately after each guess",
+      "Hints are stored off-chain"
     ],
     correctAnswer: 1,
-    explanation: "FHE.fromExternal() converts the external encrypted input (from the user) into an internal euint8 that the contract can use for homomorphic operations.",
-    category: 'operations'
-  },
-  {
-    id: 4,
-    question: "In the FHECounter contract, why do we use FHE.select() instead of if/else statements?",
-    options: [
-      "It's more readable",
-      "It's faster",
-      "It avoids branching on encrypted data, which could leak information",
-      "It uses less gas"
-    ],
-    correctAnswer: 2,
-    explanation: "Using FHE.select() instead of if/else avoids branching on encrypted data, which could leak information about the encrypted values through side channels. All operations must be homomorphic.",
+    explanation: "The hint system uses encrypted comparisons (FHE.eq, FHE.lt) and FHE.select() to create encrypted hints. The hint value 0=too low, 1=too high, 2=correct, all stored as encrypted euint32.",
     category: 'contract_structure'
   },
   {
-    id: 5,
-    question: "What is the purpose of FHE.allow() in the contract?",
+    id: 4,
+    question: "In the Confidential Transfer contract, how does it prevent insufficient balance transfers?",
     options: [
-      "To encrypt a value",
-      "To grant the caller permission to decrypt the encrypted value later",
-      "To validate input proofs",
-      "To store encrypted data"
+      "It reverts the transaction if balance is too low",
+      "It uses FHE.le() to check encrypted balance and FHE.select() to conditionally update balances",
+      "It requires pre-approval for all transfers",
+      "It uses a separate validation contract"
     ],
     correctAnswer: 1,
-    explanation: "FHE.allow() grants the caller (msg.sender) permission to decrypt the encrypted value later. This is part of the access control system for encrypted data in FHEVM.",
+    explanation: "The contract uses FHE.le(amount, balance) to check if the encrypted amount is less than or equal to the encrypted balance, then uses FHE.select() to conditionally update balances only if sufficient funds exist.",
+    category: 'operations'
+  },
+  {
+    id: 5,
+    question: "What is the purpose of FHE.allowThis() vs FHE.allow() in FHEVM contracts?",
+    options: [
+      "They do the same thing",
+      "FHE.allowThis() grants the contract permission to manage the value, FHE.allow() grants a specific address permission to decrypt",
+      "FHE.allowThis() is for encryption, FHE.allow() is for decryption",
+      "FHE.allowThis() is deprecated"
+    ],
+    correctAnswer: 1,
+    explanation: "FHE.allowThis() grants the contract itself permission to manage the encrypted value, while FHE.allow(value, address) grants a specific address permission to decrypt that value later.",
     category: 'permissions'
+  },
+  {
+    id: 6,
+    question: "In the FHE Addition contract, what happens if you call computeSum() before setting both inputs?",
+    options: [
+      "It returns 0",
+      "It reverts with 'Inputs not set' error",
+      "It uses default values",
+      "It automatically sets missing inputs to 0"
+    ],
+    correctAnswer: 1,
+    explanation: "The contract uses require(_hasA && _hasB, 'Inputs not set') to ensure both inputs are set before computation. This prevents invalid operations on uninitialized encrypted values.",
+    category: 'contract_structure'
+  },
+  {
+    id: 7,
+    question: "In the Secret Number Game, what does the encrypted hint value '2' represent?",
+    options: [
+      "Too low",
+      "Too high", 
+      "Correct guess",
+      "Invalid guess"
+    ],
+    correctAnswer: 2,
+    explanation: "The hint system uses: 0 = too low, 1 = too high, 2 = correct. The contract uses FHE.select() to choose the appropriate hint based on encrypted comparisons.",
+    category: 'operations'
+  },
+  {
+    id: 8,
+    question: "Why does the Confidential Transfer contract use FHE.le() instead of FHE.lt() for balance checking?",
+    options: [
+      "FHE.le() is more efficient",
+      "FHE.le() allows transfers equal to the exact balance amount",
+      "FHE.lt() doesn't work with encrypted values",
+      "FHE.le() is required by FHEVM"
+    ],
+    correctAnswer: 1,
+    explanation: "FHE.le() (less than or equal) allows transfers that use the exact balance amount, while FHE.lt() (less than) would prevent spending the full balance. This is important for complete balance utilization.",
+    category: 'operations'
+  },
+  {
+    id: 9,
+    question: "In the FHE Addition contract, what is the purpose of the grantAccess() function?",
+    options: [
+      "To encrypt new values",
+      "To allow other addresses to decrypt the result",
+      "To validate input proofs",
+      "To initialize the contract"
+    ],
+    correctAnswer: 1,
+    explanation: "grantAccess() allows the contract owner to share access to the encrypted result with other addresses by calling FHE.allow(_result, user). This enables collaborative decryption scenarios.",
+    category: 'permissions'
+  },
+  {
+    id: 10,
+    question: "What happens to the encrypted values in FHEVM contracts when the contract is destroyed?",
+    options: [
+      "They are automatically decrypted",
+      "They remain encrypted but become inaccessible",
+      "They are transferred to a backup contract",
+      "They are converted to plaintext"
+    ],
+    correctAnswer: 1,
+    explanation: "Encrypted values remain encrypted even after contract destruction, but they become permanently inaccessible since the contract's state is lost. This is why proper decryption planning is crucial.",
+    category: 'fhe_types'
   }
 ];
 

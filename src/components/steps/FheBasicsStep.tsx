@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -33,7 +33,8 @@ import {
   Target,
   Building2,
   Heart,
-  MessageSquare
+  MessageSquare,
+  Scale
 } from 'lucide-react';
 import { useTutorialStore } from '@/state/tutorialStore';
 import { useNavigate } from 'react-router-dom';
@@ -1045,6 +1046,119 @@ export async function decryptValue(encryptedBytes: string): Promise<number> {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Best Practices Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="space-y-4"
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-blue-500" />
+              FHEVM Best Practices
+            </CardTitle>
+            <CardDescription>
+              Essential guidelines for building secure and efficient FHEVM applications
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Smart Contract Best Practices */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm flex items-center gap-2">
+                <Code2 className="h-4 w-4 text-green-600" />
+                Smart Contract (Solidity) Best Practices
+              </h4>
+              <div className="space-y-3 text-sm">
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">🔒 Avoid FHE in view/pure functions</p>
+                  <p className="text-xs text-muted-foreground">FHE operations require offchain coprocessors → they won't execute inside a view function. Always use state-changing transactions for computations.</p>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">🔑 Use FHE.allow / FHE.allowTransient wisely</p>
+                  <p className="text-xs text-muted-foreground">Grant access only to trusted contracts/users. Use allowTransient for temporary sharing within a single transaction. Don't over-grant access, similar to not approving unlimited ERC20 allowances.</p>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">🌐 Leverage FHE.makePubliclyDecryptable only when necessary</p>
+                  <p className="text-xs text-muted-foreground">Making values publicly decryptable means anyone can see them. Only use when transparency is required (e.g., final auction results).</p>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">🔀 Branch securely with FHE.select</p>
+                  <p className="text-xs text-muted-foreground">You can't use encrypted booleans in if/else. Use FHE.select to choose between values without leaking conditions.</p>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">⚠️ Be mindful of unsupported types/ops</p>
+                  <p className="text-xs text-muted-foreground">eaddress and euint256 only support comparisons and bitwise ops (not math). Always check library docs for valid operations.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Frontend Best Practices */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm flex items-center gap-2">
+                <Globe className="h-4 w-4 text-blue-600" />
+                Frontend (Relayer SDK) Best Practices
+              </h4>
+              <div className="space-y-3 text-sm">
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">🔐 Encrypt inputs via createEncryptedInput</p>
+                  <p className="text-xs text-muted-foreground">Always use the SDK's encryption before sending values onchain. Never attempt to "DIY encrypt" values manually.</p>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">👤 Use userDecrypt for private reads</p>
+                  <p className="text-xs text-muted-foreground">For balances or private states, require the user's wallet signature (EIP-712). This ensures only the rightful user can see their data.</p>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">🌍 Use publicDecrypt only when appropriate</p>
+                  <p className="text-xs text-muted-foreground">For values meant to be globally visible (e.g., governance results). Avoid leaking sensitive states.</p>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">📱 Plan UX for encrypted balances</p>
+                  <p className="text-xs text-muted-foreground">Users won't see balances in MetaMask. Build a dApp dashboard that integrates re-encryption and decryption flows.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* General Best Practices */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm flex items-center gap-2">
+                <Scale className="h-4 w-4 text-purple-600" />
+                General Best Practices
+              </h4>
+              <div className="space-y-3 text-sm">
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">⚖️ Minimize decryptions</p>
+                  <p className="text-xs text-muted-foreground">Each decryption requires coordination with the KMS and Gateway. Batch requests when possible.</p>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">⛽ Gas considerations</p>
+                  <p className="text-xs text-muted-foreground">Symbolic FHE ops are cheap onchain, but heavy ops (mul/div) increase offchain compute load—optimize where possible.</p>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">🔍 Audit access control flows</p>
+                  <p className="text-xs text-muted-foreground">Encrypted states are powerful, but mishandling allow rules can leak or lock data.</p>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="font-medium text-xs mb-2">🛡️ Think privacy by design</p>
+                  <p className="text-xs text-muted-foreground">Decide upfront which data must remain private vs. which can eventually be public.</p>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </motion.div>
