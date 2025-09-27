@@ -6,6 +6,12 @@
 
 An interactive, step-by-step tutorial for building confidential applications with Fully Homomorphic Encryption (FHE) on the Zama Protocol. Learn to build private voting systems, encrypted counters, and other confidential dApps using cutting-edge cryptographic technology.
 
+## 🌐 Live Demo
+
+**[Try the tutorial online →](https://hello-evm-bounty.netlify.app/)**
+
+Experience the full interactive tutorial with live contract interactions, real-time encryption, and hands-on demos on the Sepolia testnet.
+
 ## ✨ Features
 
 - 🎓 **10 Comprehensive Steps** - From basics to advanced concepts
