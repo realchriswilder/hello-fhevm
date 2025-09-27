@@ -908,28 +908,35 @@ export const WriteContractStep: React.FC = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'fhe' | 'regular' | 'addition' | 'secret' | 'transfer')}>
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="fhe" className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  FHE Counter
-                </TabsTrigger>
-                <TabsTrigger value="regular" className="flex items-center gap-2">
-                  <Code className="h-4 w-4" />
-                  Regular Solidity
-                </TabsTrigger>
-                <TabsTrigger value="addition" className="flex items-center gap-2">
-                  <Play className="h-4 w-4" />
-                  FHE Addition
-                </TabsTrigger>
-                <TabsTrigger value="secret" className="flex items-center gap-2">
-                  <Eye className="h-4 w-4" />
-                  Secret Game
-                </TabsTrigger>
-                <TabsTrigger value="transfer" className="flex items-center gap-2">
-                  <Globe className="h-4 w-4" />
-                  Confidential Transfer
-                </TabsTrigger>
-              </TabsList>
+              <div className="overflow-x-auto">
+                <TabsList className="inline-flex w-max min-w-full sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-1 p-1">
+                  <TabsTrigger value="fhe" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 py-2 whitespace-nowrap min-w-fit">
+                    <FileText className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                    <span className="hidden sm:inline">FHE Counter</span>
+                    <span className="sm:hidden">Counter</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="regular" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 py-2 whitespace-nowrap min-w-fit">
+                    <Code className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                    <span className="hidden sm:inline">Regular Solidity</span>
+                    <span className="sm:hidden">Regular</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="addition" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 py-2 whitespace-nowrap min-w-fit">
+                    <Play className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                    <span className="hidden sm:inline">FHE Addition</span>
+                    <span className="sm:hidden">Addition</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="secret" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 py-2 whitespace-nowrap min-w-fit">
+                    <Eye className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                    <span className="hidden sm:inline">Secret Game</span>
+                    <span className="sm:hidden">Game</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="transfer" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 py-2 whitespace-nowrap min-w-fit">
+                    <Globe className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                    <span className="hidden sm:inline">Confidential Transfer</span>
+                    <span className="sm:hidden">Transfer</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
               
               <TabsContent value="fhe" className="mt-4">
                 <div className="space-y-4">
@@ -950,7 +957,7 @@ export const WriteContractStep: React.FC = () => {
                   </div>
                   
                   <ScrollArea className="h-96 border rounded-lg overflow-x-auto">
-                    <div className="p-4 font-mono text-sm min-w-[920px]">
+                    <div className="p-2 sm:p-4 font-mono text-xs sm:text-sm min-w-[320px] sm:min-w-[920px]">
                       {FHECounterContract.split('\n').map((line, index) => {
                         const explanation = contractExplanations.find(exp => exp.line === index + 1);
                         return (
@@ -988,7 +995,7 @@ export const WriteContractStep: React.FC = () => {
                   </div>
                   
                   <ScrollArea className="h-96 border rounded-lg overflow-x-auto">
-                    <div className="p-4 font-mono text-sm min-w-[920px]">
+                    <div className="p-2 sm:p-4 font-mono text-xs sm:text-sm min-w-[320px] sm:min-w-[920px]">
                       {RegularCounterContract.split('\n').map((line, index) => (
                         <div key={index} className="flex items-start gap-2 lg:gap-4 py-1">
                           <span className="text-muted-foreground w-8 text-right select-none flex-shrink-0">
@@ -1021,7 +1028,7 @@ export const WriteContractStep: React.FC = () => {
                   </div>
                   
                   <ScrollArea className="h-96 border rounded-lg overflow-x-auto">
-                    <div className="p-4 font-mono text-sm min-w-[920px]">
+                    <div className="p-2 sm:p-4 font-mono text-xs sm:text-sm min-w-[320px] sm:min-w-[920px]">
                       {FHEAdditionContract.split('\n').map((line, index) => {
                         const explanation = fheAdditionExplanations.find(exp => exp.line === index + 1);
                         return (
@@ -1070,7 +1077,7 @@ export const WriteContractStep: React.FC = () => {
                   </div>
                   
                   <ScrollArea className="h-96 border rounded-lg overflow-x-auto">
-                    <div className="p-4 font-mono text-sm min-w-[920px]">
+                    <div className="p-2 sm:p-4 font-mono text-xs sm:text-sm min-w-[320px] sm:min-w-[920px]">
                       {SecretNumberGameContract.split('\n').map((line, index) => {
                         const explanation = secretGameExplanations.find(exp => exp.line === index + 1);
                         return (
@@ -1119,7 +1126,7 @@ export const WriteContractStep: React.FC = () => {
                   </div>
                   
                   <ScrollArea className="h-96 border rounded-lg overflow-x-auto">
-                    <div className="p-4 font-mono text-sm min-w-[920px]">
+                    <div className="p-2 sm:p-4 font-mono text-xs sm:text-sm min-w-[320px] sm:min-w-[920px]">
                       {ConfidentialTransferContract.split('\n').map((line, index) => {
                         const explanation = confidentialTransferExplanations.find(exp => exp.line === index + 1);
                         return (
