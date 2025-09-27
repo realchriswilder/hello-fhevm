@@ -32,7 +32,7 @@ export async function encryptYesNo(choice: 'yes' | 'no', contractAddress: string
   const bytes = result.handles[0] as Uint8Array;
   const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
   const handle = `0x${hex}`;
-  return handle; // externalEuint64-compatible handle (0x...)
+  return handle; 
 }
 
 // Decrypt an aggregate tally (single value) returned by the relayer callback/contract
