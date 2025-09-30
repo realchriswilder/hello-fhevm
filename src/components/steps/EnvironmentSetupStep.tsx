@@ -166,16 +166,7 @@ export const EnvironmentSetupStep: React.FC = () => {
       description: "Check that npm is working correctly",
       command: "npm --version",
     },
-    {
-      title: "Install project dependencies",
-      description: "From the project root",
-      command: "npm install"
-    },
-    {
-      title: "Set up environment variables",
-      description: "Copy and configure environment settings",
-      command: "cp .env.example .env"
-    }
+    // Removed local project install/env steps per spec; covered in template section
   ];
 
   const copyToClipboard = async (text: string) => {
@@ -311,6 +302,8 @@ export const EnvironmentSetupStep: React.FC = () => {
           We'll check your system and install the necessary tools.
         </p>
       </motion.div>
+
+      
 
       {/* Progress */}
       <motion.div
@@ -511,6 +504,36 @@ export const EnvironmentSetupStep: React.FC = () => {
                 </span>
               </div>
             </div>
+
+            {/* New: After cloning the official template */}
+            <div className="bg-muted rounded-lg p-3 space-y-2">
+              <p className="text-xs font-medium text-foreground">After cloning the official Hardhat template:</p>
+              <div className="grid gap-2 md:grid-cols-2">
+                <div className="bg-card border rounded p-2">
+                  <p className="text-[11px] font-semibold mb-1">Install Hardhat and dependencies</p>
+                  <pre className="text-[11px] whitespace-pre-wrap break-words"><code>{`cd fhevm-hardhat-template
+npm install`}</code></pre>
+                </div>
+                <div className="bg-card border rounded p-2">
+                  <p className="text-[11px] font-semibold mb-1">Configure networks and RPC endpoints</p>
+                  <p className="text-[11px] text-muted-foreground">Open <code>hardhat.config.ts</code> or <code>hardhat.config.js</code> in the template and set your <code>sepolia</code> (or local) RPC URL and accounts so the environment is ready for deployment.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* New: React template recommendation */}
+            <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+              <p className="text-xs font-medium text-foreground">Official React template from the Zama team — includes ready‑to‑use frontend components for FHEVM dApps.</p>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <Button variant="outline" size="sm" className="gap-2 w-full sm:w-auto" asChild>
+                  <a href="https://github.com/zama-ai/fhevm-react-template" target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-3 w-3" />
+                    View React Template
+                  </a>
+                </Button>
+                <span className="text-xs text-muted-foreground"><strong>Repository:</strong> zama-ai/fhevm-react-template</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </motion.div>
@@ -607,6 +630,8 @@ npm run dev`}</code></pre>
           </CardContent>
         </Card>
       </motion.div>
+
+      
 
 
       {/* Pro Tips */}

@@ -110,12 +110,24 @@ const tutorialContent: Record<TutorialStep, TutorialContent> = {
           command: "npm --version"
         },
         {
-          description: "Install project dependencies", 
-          command: "npm install"
+          description: "After cloning Hardhat template: install deps",
+          command: "cd fhevm-hardhat-template && npm install"
         },
         {
-          description: "Copy environment file",
-          command: "cp .env.example .env"
+          description: "Configure networks in Hardhat config",
+          command: "Open hardhat.config.ts/js and set Sepolia RPC + accounts"
+        }
+      ],
+      links: [
+        {
+          title: "FHEVM Hardhat Template",
+          url: "https://github.com/zama-ai/fhevm-hardhat-template",
+          description: "Official starter for contracts"
+        },
+        {
+          title: "FHEVM React Template",
+          url: "https://github.com/zama-ai/fhevm-react-template",
+          description: "Official React starter for dApps"
         }
       ]
     }

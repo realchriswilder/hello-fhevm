@@ -275,8 +275,8 @@
       "artifacts": []
     },
     "E:\\bounty\\vote-app\\fhevmTemp\\@fhevm\\solidity\\config\\ZamaConfig.sol": {
-      "lastModificationDate": 1758233592514,
-      "contentHash": "53afa19b446a7b49a624afc5d40ac227",
+      "lastModificationDate": 1759128694133,
+      "contentHash": "36810e84dfdd27616b5eaf3b31ddc0a9",
       "sourceName": "@fhevm/solidity/config/ZamaConfig.sol",
       "solcConfig": {
         "version": "0.8.24",
@@ -411,6 +411,53 @@
       ],
       "artifacts": [
         "SimpleVoting"
+      ]
+    },
+    "E:\\bounty\\vote-app\\contracts\\ConfidentialVoting.sol": {
+      "lastModificationDate": 1759128638897,
+      "contentHash": "70350b44c19879ddfc1fc05b550594fe",
+      "sourceName": "contracts/ConfidentialVoting.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "metadata": {
+            "bytecodeHash": "none",
+            "useLiteralContent": true
+          },
+          "optimizer": {
+            "enabled": true,
+            "runs": 800
+          },
+          "evmVersion": "cancun",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@fhevm/solidity/lib/FHE.sol",
+        "@fhevm/solidity/config/ZamaConfig.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "ConfidentialVoting"
       ]
     }
   }

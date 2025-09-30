@@ -800,11 +800,11 @@ export const WriteContractStep: React.FC = () => {
   // encode Yes as 1 and No as 0 (euint64)
   const value = choice === 'yes' ? 1 : 0;
   const encryptedInput = fhe.createEncryptedInput(contractAddress, userAddress);
-  const result = await encryptedInput.add64(value).encrypt();
+  const result = await encryptedInput.add68(value).encrypt();
   const bytes = result.handles[0] as Uint8Array;
   const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
   const handle = \`0x\${hex}\`;
-  return handle; // externalEuint64-compatible handle (0x...)
+  
 }`}
                   </pre>
                 <div className="text-muted-foreground dark:text-muted-foreground/80 text-xs mt-2">
@@ -827,17 +827,51 @@ export const WriteContractStep: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-5">
               <p className="text-sm text-muted-foreground">
-                Deploy your contract to Sepolia and test the complete voting flow.
+                Deploy `SimpleVoting.sol` to Sepolia using Hardhat, then paste the deployed address into the frontend `.env`.
               </p>
+
+              {/* Prereqs */}
               <div className="bg-muted p-3 rounded-lg">
-                <div className="font-mono text-xs">
-                  <div>🚀 Deploy & Test</div>
-                  <div className="text-muted-foreground">• Contract deployment</div>
-                  <div className="text-muted-foreground">• Live testing</div>
-                  <div className="text-muted-foreground">• Real transactions</div>
-                </div>
+                <div className="font-semibold text-xs mb-2">1) Prerequisites (vote-app/.env)</div>
+                <pre className="text-[11px] sm:text-xs whitespace-pre-wrap break-words"><code>{`# Required for Sepolia deploy
+PRIVATE_KEY=0xYOUR_WALLET_PRIVATE_KEY
+INFURA_API_KEY=YOUR_INFURA_KEY   # or set VITE_SEPOLIA_RPC_URL instead
+ETHERSCAN_API_KEY=YOUR_ETHERSCAN_KEY   # optional for verify`}</code></pre>
+              </div>
+
+              {/* Compile & Deploy */}
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="font-semibold text-xs mb-2">2) Compile and deploy</div>
+                <pre className="text-[11px] sm:text-xs whitespace-pre-wrap break-words"><code>{`cd vote-app
+npx hardhat compile
+npx hardhat run scripts/deploy.cjs --network sepolia`}</code></pre>
+                <p className="text-[11px] text-muted-foreground mt-2">The command prints the deployed address. Copy it.</p>
+              </div>
+
+              {/* Frontend env */}
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="font-semibold text-xs mb-2">3) Point the frontend at your contract</div>
+                <pre className="text-[11px] sm:text-xs whitespace-pre-wrap break-words"><code>{`# .env (frontend root)
+VITE_VOTING_CONTRACT_ADDRESS=0xYourDeployedAddress`}</code></pre>
+              </div>
+
+              {/* Reference to deploy script */}
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="font-semibold text-xs mb-2">Where the deployment lives</div>
+                <div className="text-[11px] text-muted-foreground mb-2">`vote-app/scripts/deploy.cjs` uses Hardhat's runtime to deploy `SimpleVoting.sol`:</div>
+                <pre className="text-[11px] sm:text-xs whitespace-pre-wrap break-words"><code>{`// vote-app/scripts/deploy.cjs (excerpt)
+const hre = require("hardhat");
+
+async function main() {
+  const factory = await hre.ethers.getContractFactory("SimpleVoting");
+  const contract = await factory.deploy();
+  const address = await contract.getAddress();
+  console.log("SimpleVoting deployed to:", address);
+}
+
+main().catch((e) => { console.error(e); process.exit(1); });`}</code></pre>
               </div>
             </div>
           </CardContent>
@@ -863,19 +897,52 @@ export const WriteContractStep: React.FC = () => {
           <CardContent className="space-y-6">
             {/* File Structure */}
             <div>
-              <h4 className="font-semibold mb-3">📁 Complete Frontend Structure</h4>
-              <div className="bg-muted p-4 rounded-lg font-mono text-sm">
-                <div className="text-green-600 dark:text-green-400">vote-app/</div>
-                <div className="ml-4">├── src/</div>
-                <div className="ml-8">├── fhe.ts          <span className="text-muted-foreground">// Fhevmjs/relayer-sdk setup & encryption</span></div>
-                <div className="ml-8">├── service.ts       <span className="text-muted-foreground">// Contract interaction</span></div>
-                <div className="ml-8">├── contracts.ts     <span className="text-muted-foreground">// Contract ABI & address</span></div>
-                <div className="ml-8">├── main.tsx         <span className="text-muted-foreground">// App entry point</span></div>
-                <div className="ml-8">└── ui/</div>
-                <div className="ml-12">    └── App.tsx      <span className="text-muted-foreground">// Main UI component</span></div>
-                <div className="ml-4">├── contracts/</div>
-                <div className="ml-8">    └── SimpleVoting.sol <span className="text-muted-foreground">// Voting contract</span></div>
-                <div className="ml-4">└── package.json</div>
+              <h4 className="font-semibold mb-3">📁 Project Structure</h4>
+              <div className="code-block -mx-1 sm:-mx-2">
+                <pre className="text-[11px] sm:text-xs whitespace-pre leading-relaxed p-3">
+{`🗂 hello-fhevm/                                  # This repository (tutorial + contracts)
+├─ 🗂 src/                                        # Tutorial frontend (React + Vite)
+│  ├─ 🗂 components/                               # UI primitives and step UIs
+│  │  ├─ 🗂 layout/                                # App shell, sidebar, navigation
+│  │  │  ├─ 📄 AppBar.tsx                          # Top app bar
+│  │  │  ├─ 📄 Navigation.tsx                      # Left navigation rail
+│  │  │  └─ 📄 TutorialSidebar.tsx                 # Right tutorial panel
+│  │  ├─ 🗂 steps/                                 # Each guided step's screen
+│  │  │  ├─ 📄 EnvironmentSetupStep.tsx            # Environment setup
+│  │  │  ├─ 📄 ConnectWalletStep.tsx               # Wallet + network setup
+│  │  │  ├─ 📄 PrivateVotingStep.tsx               # Live voting demo
+│  │  │  └─ 📄 ReviewStep.tsx                      # Wrap‑up & next steps
+│  │  └─ 🗂 quiz/                                  # Knowledge checks for steps
+│  ├─ 🗂 lib/                                      # FHE helpers, wallet setup, utils
+│  │  ├─ 🗂 fhe/                                   # FHE client + types
+│  │  ├─ 🗂 wallet/                                # Wagmi/RainbowKit setup
+│  │  └─ 📄 utils.ts                               # Misc utilities
+│  ├─ 🗂 state/                                    # Global stores (Zustand)
+│  │  ├─ 📄 tutorialStore.ts                       # Step progress, UI state
+│  │  └─ 📄 walletStore.ts                         # Wallet/session state
+│  ├─ 🗂 pages/                                    # Route components
+│  │  ├─ 📄 Index.tsx                              # Home route
+│  │  └─ 📄 NotFound.tsx                           # 404 route
+│  ├─ 📄 main.tsx                                  # App bootstrap & providers
+│  └─ 📄 index.css                                 # Global styles
+├─ 🗂 public/                                      # Static assets served by Vite
+│  ├─ 📄 _redirects                                # SPA routing on hosts
+│  └─ 🗂 fonts/                                    # Web fonts
+├─ 🗂 vote-app/                                    # Hardhat workspace (contracts backend)
+│  ├─ 🗂 contracts/                                # Solidity sources (e.g., SimpleVoting.sol)
+│  │  └─ 📄 SimpleVoting.sol                        # Private voting contract
+│  ├─ 🗂 scripts/                                  # Deploy and utility scripts
+│  │  └─ 📄 deploy.cjs                             # Example deployment entry
+│  ├─ 🗂 test/                                     # Hardhat tests
+│  │  ├─ 📄 SimpleVoting.test.cjs                  # Core tests
+│  │  └─ 📄 SimpleVoting.test1.cjs                 # Additional scenarios
+│  ├─ 📄 hardhat.config.ts                         # Networks & RPC/accounts configuration
+│  └─ 📄 package.json                              # Node package for Hardhat app
+├─ 📄 package.json                                 # Frontend scripts & dependencies
+├─ 📄 vite.config.ts                               # Vite configuration
+├─ 📄 README.md                                    # Project overview and quickstart
+└─ 🗂 dist/                                        # Production build output (generated)`}
+                </pre>
               </div>
             </div>
 
@@ -885,10 +952,11 @@ export const WriteContractStep: React.FC = () => {
                 <h4 className="font-semibold">🔐 fhe.ts - FHEVM Integration</h4>
                 <div className="bg-muted p-3 rounded-lg text-xs">
                   <div className="font-mono mb-2">// Loads @zama-fhe/relayer-sdk</div>
-                  <div className="text-muted-foreground">• Uses official Zama NPM package</div>
-                  <div className="text-muted-foreground">• ESM format with initSDK()</div>
-                  <div className="text-muted-foreground">• Handles WASM loading</div>
-                  <div className="text-muted-foreground">• Encrypts user votes</div>
+                  <div className="text-muted-foreground">• Uses CDN dynamic import in <code>vote-app/src/fhe.ts</code></div>
+                  <div className="text-muted-foreground">• Calls <code>initSDK()</code> then <code>createInstance(SepoliaConfig)</code></div>
+                  <div className="text-muted-foreground">• Handles WASM loading automatically</div>
+                  <div className="text-muted-foreground">• Encrypts user votes (createEncryptedInput → add8 → encrypt → handles + inputProof)</div>
+                  <div className="text-muted-foreground">• Provides helper to call contract with encrypted params</div>
                 </div>
               </div>
 
@@ -918,10 +986,9 @@ export const WriteContractStep: React.FC = () => {
                 <h4 className="font-semibold">📋 contracts.ts - ABI & Address</h4>
                 <div className="bg-muted p-3 rounded-lg text-xs">
                   <div className="font-mono mb-2">// Contract configuration</div>
-                  <div className="text-muted-foreground">• Contract ABI</div>
-                  <div className="text-muted-foreground">• Contract address</div>
-                  <div className="text-muted-foreground">• Type definitions</div>
-                  <div className="text-muted-foreground">• Environment variables</div>
+                  <div className="text-muted-foreground">• Contract ABI (subset for UI calls)</div>
+                  <div className="text-muted-foreground">• Address via <code>VITE_VOTING_CONTRACT_ADDRESS</code></div>
+                  <div className="text-muted-foreground">• Optional helpers like <code>getDecryptionRequestId</code></div>
                 </div>
               </div>
             </div>
@@ -929,22 +996,24 @@ export const WriteContractStep: React.FC = () => {
             {/* Usage Instructions */}
             <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
               <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">🚀 How to Use This Frontend</h4>
+              <p className="text-xs text-blue-700 dark:text-blue-300 mb-2">This project loads the SDK from the CDN via a dynamic import inside <code>vote-app/src/fhe.ts</code>. You can also install via NPM if you prefer.</p>
               <div className="text-sm text-blue-700 dark:text-blue-300 space-y-3">
                 <div>
-                  <p><strong>Option 1 - NPM Package (Recommended):</strong></p>
+                  <p><strong>Option 1 - NPM Package:</strong></p>
                   <div className="bg-white dark:bg-gray-800 p-3 rounded font-mono text-xs space-y-1">
                     <div># Install the official Zama FHE Relayer SDK</div>
                     <div className="text-green-600">npm install @zama-fhe/relayer-sdk</div>
-                    <div className="text-green-600">npm install viem @rainbow-me/rainbowkit</div>
                     <div className="mt-2 text-yellow-600"># Add to package.json:</div>
                     <div className="text-yellow-600">"type": "module"</div>
                   </div>
                 </div>
                 
                 <div>
-                  <p><strong>Option 2 - CDN (Alternative):</strong></p>
-                  <div className="bg-white dark:bg-gray-800 p-3 rounded font-mono text-xs">
-                    <div>&lt;script src="https://cdn.zama.ai/relayer-sdk-js/0.2.0/relayer-sdk-js.umd.cjs"&gt;&lt;/script&gt;</div>
+                  <p><strong>Option 2 - CDN (Used in this project via dynamic import):</strong></p>
+                  <div className="bg-white dark:bg-gray-800 p-3 rounded font-mono text-xs whitespace-pre-wrap break-words">
+{`// Inside vote-app/src/fhe.ts
+const sdk = await import('https://cdn.zama.ai/relayer-sdk-js/0.2.0/relayer-sdk-js.js');
+const { initSDK, createInstance, SepoliaConfig } = sdk;`}
                   </div>
                 </div>
 
@@ -956,6 +1025,35 @@ export const WriteContractStep: React.FC = () => {
                     <li>• Clone the repo and you'll have a working FHE voting app!</li>
                   </ul>
                 </div>
+
+                {/* CDN Usage Example */}
+                <div>
+                  <p className="font-semibold">CDN quick start (what this app does under the hood)</p>
+                  <div className="bg-white dark:bg-gray-800 p-3 rounded font-mono text-xs whitespace-pre-wrap break-words">
+{`// 1) Dynamically import the SDK from the CDN
+const sdk = await import('https://cdn.zama.ai/relayer-sdk-js/0.2.0/relayer-sdk-js.js');
+const { initSDK, createInstance, SepoliaConfig, FhevmType } = sdk;
+await initSDK();
+const fhe = await createInstance({ ...SepoliaConfig, network: (window as any).ethereum });
+
+// 3) Encrypt a YES/NO vote (YES = 1, NO = 0)
+const ciphertext = await fhe.createEncryptedInput(CONTRACT_ADDRESS, USER_ADDRESS);
+ciphertext.add8(BigInt(1)); // 1 for YES (use 0 for NO)
+const { handles, inputProof } = await ciphertext.encrypt();
+const bytes = handles[0];
+const encryptedHandle = '0x' + Array.from(bytes).map((b: number) => b.toString(16).padStart(2, '0')).join('');
+
+// 4) Call contract (viem/ethers) with encrypted params
+// vote(sessionId, externalEuint8, proof)
+await contract.write.vote([sessionId, encryptedHandle, inputProof]);
+
+// 5) Later: request tally reveal, then read revealed totals
+// contract emits results after oracle callback.
+`}
+                  </div>
+                </div>
+
+                {/* Note: Decryption is performed by the oracle via contract callback in this app. */}
               </div>
             </div>
           </CardContent>

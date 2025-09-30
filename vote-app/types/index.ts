@@ -22,5 +22,7 @@ export type { IFHEVMExecutor } from "./@fhevm/solidity/lib/Impl.sol/IFHEVMExecut
 export { IFHEVMExecutor__factory } from "./factories/@fhevm/solidity/lib/Impl.sol/IFHEVMExecutor__factory";
 export type { IInputVerifier } from "./@fhevm/solidity/lib/Impl.sol/IInputVerifier";
 export { IInputVerifier__factory } from "./factories/@fhevm/solidity/lib/Impl.sol/IInputVerifier__factory";
+export type { ConfidentialVoting } from "./contracts/ConfidentialVoting";
+export { ConfidentialVoting__factory } from "./factories/contracts/ConfidentialVoting__factory";
 export type { SimpleVoting } from "./contracts/SimpleVoting";
 export { SimpleVoting__factory } from "./factories/contracts/SimpleVoting__factory";
